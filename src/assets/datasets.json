@@ -1,0 +1,228 @@
+{
+    "datasets": [
+        {
+            "name": "Mflix",
+            "collections": [
+                {
+                    "name": "comments",
+                    "model": {
+                        "name": "Name",
+                        "email": "Email",
+                        "movie_id": "UUID",
+                        "text": "Paragraph",
+                        "date": "Date"
+                    }
+                },
+                {
+                    "name": "movies",
+                    "model": {
+                        "title": "Name",
+                        "year": "Year",
+                        "runtime": "Number",
+                        "released": "Date",
+                        "poster": "URL",
+                        "plot": "Paragraph",
+                        "fullplot": "Paragraph",
+                        "lastupdated": "Date",
+                        "type": "Word",
+                        "directors": [
+                            "Name"
+                        ],
+                        "imdb": {
+                            "rating": "Number",
+                            "votes": "Number",
+                            "id": "Number"
+                        },
+                        "countries": [
+                            "Country"
+                        ],
+                        "genres": [
+                            "Word"
+                        ],
+                        "tomatoes": {
+                            "viewer": {
+                                "rating": "Number",
+                                "numReviews": "Number"
+                            },
+                            "lastUpdated": "Date"
+                        },
+                        "num_mflix_comments": "Number"
+                    }
+                },
+                {
+                    "name": "sessions",
+                    "model": {
+                        "user_id": "UUID",
+                        "jwt": "JWT"
+                    }
+                },
+                {
+                    "name": "theatres",
+                    "model": {
+                        "theaterId": "Number",
+                        "location": {
+                            "address": {
+                                "street1": "Street",
+                                "city": "City",
+                                "state": "State",
+                                "zipcode": "ZipCode"
+                            },
+                            "geo": "Location"
+                        }
+                    }
+                },
+                {
+                    "name": "users",
+                    "model": {
+                        "name": "Name",
+                        "email": "Email",
+                        "password": "Hash"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Restaurant",
+            "collections": [
+                {
+                    "name": "restaurant",
+                    "model": {
+                        "address": {
+                            "building": "Number",
+                            "coord": "Location",
+                            "street": "Street",
+                            "zipcode": "ZipCode"
+                        },
+                        "borough": "Name",
+                        "cuisine": "Country",
+                        "grades": [
+                            {
+                                "date": "Date",
+                                "grade": "Alphabet",
+                                "score": "Number"
+                            },
+                            {
+                                "date": "Date",
+                                "grade": "Alphabet",
+                                "score": "Number"
+                            },
+                            {
+                                "date": "Date",
+                                "grade": "Alphabet",
+                                "score": "Number"
+                            },
+                            {
+                                "date": "Date",
+                                "grade": "Alphabet",
+                                "score": "Number"
+                            }
+                        ],
+                        "name": "Name",
+                        "restaurant_id": "UUID"
+                    }
+                },
+                {
+                    "name": "neighbourhoods",
+                    "model": {
+                        "geometry": {
+                            "coordinates": [
+                                [
+                                    [
+                                        "Latitude",
+                                        "Longitude"
+                                    ],
+                                    [
+                                        "Latitude",
+                                        "Longitude"
+                                    ],
+                                    [
+                                        "Latitude",
+                                        "Longitude"
+                                    ],
+                                    [
+                                        "Latitude",
+                                        "Longitude"
+                                    ],
+                                    [
+                                        "Latitude",
+                                        "Longitude"
+                                    ],
+                                    [
+                                        "Latitude",
+                                        "Longitude"
+                                    ]
+                                ]
+                            ]
+                        },
+                        "name": "Name"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Supplies",
+            "collections": [
+                {
+                    "name": "sales",
+                    "model": {
+                        "saleDate": {
+                            "$date": "Date"
+                        },
+                        "items": [
+                            {
+                                "name": "Name",
+                                "tags": [
+                                    "Word",
+                                    "Word",
+                                    "Word"
+                                ],
+                                "price": "Number",
+                                "quantity": "Number"
+                            },
+                            {
+                                "name": "Word",
+                                "tags": [
+                                    "Word",
+                                    "Word",
+                                    "Word",
+                                    "Word"
+                                ],
+                                "price": "Number",
+                                "quantity": "Number"
+                            },
+                            {
+                                "name": "Word",
+                                "tags": [
+                                    "Word",
+                                    "Word",
+                                    "Word"
+                                ],
+                                "price": "Number",
+                                "quantity": "Number"
+                            },
+                            {
+                                "name": "Word",
+                                "tags": [
+                                    "Word",
+                                    "Word",
+                                    "Word"
+                                ],
+                                "price": "Number",
+                                "quantity": "Number"
+                            }
+                        ],
+                        "storeLocation": "City",
+                        "customer": {
+                            "gender": "Gender",
+                            "age": "Age",
+                            "email": "Email",
+                            "satisfaction": "Number"
+                        },
+                        "couponUsed": "Boolean",
+                        "purchaseMethod": "Word"
+                    }
+                }
+            ]
+        }
+    ]
+}

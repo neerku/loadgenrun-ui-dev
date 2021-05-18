@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>Save {{ data.caller }}</h2>
+<div mat-dialog-content>
+  <mat-form-field class="w-100" appearance="legacy">
+    <mat-label>Choose {{ data.caller }} Name</mat-label>
+    <input matInput placeholder="Template" [(ngModel)]="templateName" />
+    <mat-error>Name is required</mat-error>
+    <mat-hint *ngIf="hasError(templateName)" style="color: red"> Name already exists </mat-hint>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button (click)="close()" cdkFocusInitial>Close</button>
+  <button mat-raised-button (click)="save(templateName)">Save</button>
+</div>

@@ -1,0 +1,191 @@
+<div class="container-fluid mt-3" fxFlexAlign="stretch">
+  <mat-horizontal-stepper linear="false" (selectionChange)="onStepChange()" #stepper>
+    <mat-step>
+      <ng-template matStepLabel>Configure</ng-template>
+
+      <mat-card>
+        <section>
+          <mat-tab-group (selectedTabChange)="onTabChanged()">
+            <mat-tab label="instructions">
+              <section class="form-fields">
+                <p class="mt-20"><i>Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has
+                    been the
+                    industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type
+                    and
+                    scrambled it to make a type specimen book. It has survived not only five centuries, but also the
+                    leap
+                    into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with
+                    the
+                    release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop
+                    publishing
+                    software like Aldus PageMaker including versions of Lorem Ipsum.</i></p>
+                <mat-form-field appearance="legacy">
+                  <mat-label>Migration Name</mat-label>
+                  <input matInput [(ngModel)]="Project.MigrationName" placeholder="" required />
+                </mat-form-field>
+              </section>
+            </mat-tab>
+            <mat-tab label="source details (cosmos)">
+              <section class="form-fields">
+                
+                <mat-form-field appearance="legacy">
+                  <mat-label>Host URL</mat-label>
+                  <input matInput [(ngModel)]="Project.Configuration.CosmosHost" placeholder="" required />
+                </mat-form-field>
+                <mat-form-field appearance="legacy">
+                  <mat-label>Authentication Database</mat-label>
+                  <input matInput [(ngModel)]="Project.Configuration.CosmosAuthenticationDatabase" placeholder=""
+                    required />
+                </mat-form-field>
+                <mat-form-field appearance="legacy">
+                  <mat-label>User Name</mat-label>
+                  <input matInput [(ngModel)]="Project.Configuration.CosmosUser" placeholder="" required />
+                </mat-form-field>
+                <mat-form-field appearance="legacy">
+                  <mat-label>Password</mat-label>
+                  <input matInput [(ngModel)]="Project.Configuration.CosmosPassword" placeholder="" type="password"
+                    required />
+                </mat-form-field>
+              </section>
+              <div style="margin: 20px;margin-left: 0;">
+                <button mat-raised-button color="primary" (click)="getDatabaseList()">Validate</button>
+                <span *ngIf="isCosmosConnectionValid" class="validate-check"> &#x2713; </span>
+              </div>
+              <section class="form-fields" *ngIf="isCosmosConnectionValid">
+                <mat-form-field class="non-input">
+                  <mat-label>Dump All Databases</mat-label>
+                  <input matInput [hidden]="true" [(ngModel)]="Project.Configuration.DumpAll" name="DumpAll" required />
+                  <mat-checkbox class="ml-3" [(ngModel)]="Project.Configuration.DumpAll" on name="DumpAll" required>
+                  </mat-checkbox>
+                </mat-form-field>
+                <mat-form-field appearance="legacy" *ngIf="!(Project.Configuration.DumpAll)">
+                  <mat-label>Collections</mat-label>
+                  <mat-select [(ngModel)]="Project.Configuration.CosmosDatabases" multiple required>
+                    <mat-option *ngFor="let db of cosmosDbList" [value]="db">{{db}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </section>
+            </mat-tab>
+
+            <mat-tab label="Target Details (Mongo)">
+              <section style="margin-top: 20px; margin-bottom: 10px">
+                <mat-form-field appearance="legacy">
+                  <mat-label>MongoDB Connection String</mat-label>
+                  <input matInput [(ngModel)]="Project.Configuration.MongoUri" placeholder="" required />
+                </mat-form-field>
+                <span *ngIf="isMongoConnectionValid" class="validate-check"> <mat-icon aria-hidden="false" aria-label="Example check_circle icon" >check_circle</mat-icon> </span>
+                <p><i>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</i></p>
+                <button mat-raised-button color="primary" (click)="validateMongoDBConnection()">Validate</button>
+              </section>
+            </mat-tab>
+            <mat-tab label="Virtual Machine Configuration">
+              <section style="margin-top: 20px; margin-bottom: 10px">
+                <h6 class="sub-header">Azure Account</h6>
+                <mat-form-field appearance="legacy">
+                  <mat-label>ClientId</mat-label>
+                  <input matInput [(ngModel)]="Project.AzAccount.ClientId" placeholder="" required />
+                </mat-form-field>
+                <mat-form-field appearance="legacy">
+                  <mat-label>Client Secret</mat-label>
+                  <input matInput [(ngModel)]="Project.AzAccount.ClientSecret" placeholder="" required />
+                </mat-form-field>
+                <mat-form-field appearance="legacy">
+                  <mat-label>TenantId</mat-label>
+                  <input matInput [(ngModel)]="Project.AzAccount.TenantId" placeholder="" required />
+                </mat-form-field>
+                <mat-form-field appearance="legacy">
+                  <mat-label>SubscriptionId</mat-label>
+                  <input matInput [(ngModel)]="Project.AzAccount.SubscriptionId" placeholder="" required />
+                </mat-form-field>
+              </section>
+              <section style="margin-top: 20px; margin-bottom: 10px" >
+                <h6 class="sub-header">Virtual Machine</h6>
+                <div style="margin-top: 20px;"><mat-radio-group  aria-label="Select an OS" [(ngModel)]="Project.VMConfiguration.OsName">
+                  <mat-radio-button style="margin-right: 20px;" value="Windows">Windows</mat-radio-button>
+                  <mat-radio-button value="Linux">Linux</mat-radio-button>
+                </mat-radio-group></div> 
+                <mat-form-field appearance="legacy">
+                  <mat-label>Resource Group Name</mat-label>
+                  <input matInput [(ngModel)]="Project.VMConfiguration.ResourceGroupName" placeholder="" required />
+                </mat-form-field>
+                <mat-form-field appearance="legacy">
+                  <mat-label>Location</mat-label>
+                  <input matInput [(ngModel)]="Project.VMConfiguration.Location" placeholder="" required />
+                </mat-form-field>
+                <mat-form-field appearance="legacy">
+                  <mat-label>Machine Name</mat-label>
+                  <input matInput [(ngModel)]="Project.VMConfiguration.MachineName" placeholder="" required />
+                </mat-form-field>
+                <mat-form-field appearance="legacy">
+                  <mat-label>Size</mat-label>
+                  <input matInput [(ngModel)]="Project.VMConfiguration.Size" placeholder="" />
+                </mat-form-field>
+                <mat-form-field appearance="legacy">
+                  <mat-label>User Name</mat-label>
+                  <input matInput [(ngModel)]="Project.VMConfiguration.UserName" placeholder="" required />
+                </mat-form-field>
+                <mat-form-field appearance="legacy">
+                  <mat-label>Password</mat-label>
+                  <input matInput [(ngModel)]="Project.VMConfiguration.Password" placeholder="" required />
+                </mat-form-field>
+              </section>
+              <div>
+                <br />
+                <button mat-raised-button color="primary" (click)="startBackup()" class="pull-right">Start</button>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </section>
+        <div style="text-align: right; margin: 20px" *ngIf="isBackupStarted">
+          <button mat-raised-button class="bg-secondary text-white" matStepperNext>Next</button>
+        </div>
+      </mat-card>
+    </mat-step>
+    <div>
+      <mat-step>
+        <ng-template matStepLabel>Backup</ng-template>
+        <div class="mt-2">
+          <h6 class="sub-header" style="margin-bottom: 20px;">Migration History</h6>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Migration Name</th>
+                <th scope="col">Virtual Machine OS</th>
+                <th scope="col">Requested Date</th>                
+                <th scope="col">Completed Date</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let project of projectList">
+                
+                <td>{{project.migrationName}}</td>
+                <td>{{project.migrationName}}</td>
+                <td>{{project.migrationName}}</td>
+                <td>{{project.migrationName}}</td>
+                <td>
+                  <mat-icon aria-hidden="false" aria-label="Example edit icon" (click)="startBackup()">edit</mat-icon>
+                  <mat-icon aria-hidden="false" aria-label="Example refresh icon" (click)="startBackup()">refresh
+                  </mat-icon>
+                </td>
+              </tr>
+              
+            </tbody>
+          </table>
+        </div>
+        <section>
+          <!-- <textarea *ngIf="loadTestLogs != null" disabled="true" style="width: 100%; height: 200px">{{
+              loadTestLogs
+            }}</textarea> -->
+        </section>
+
+
+        <div style="text-align: right; margin: 20px">
+          <!-- <button mat-raised-button class="bg-secondary text-white" matStepperPrevious style="float: left">
+            Previous
+          </button> -->
+        </div>
+      </mat-step>
+    </div>
+  </mat-horizontal-stepper>
+</div>

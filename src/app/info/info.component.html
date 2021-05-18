@@ -1,0 +1,94 @@
+<div class="container">
+  <mat-card>
+    <section class="form-fields">
+      <mat-form-field appearance="legacy">
+        <mat-label>Database Vendor</mat-label>
+        <mat-select [(ngModel)]="infoRequest.server">
+          <mat-option value="mongodb">MongoDB</mat-option>
+          <mat-option value="atlas">MongoDB Atlas</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="legacy">
+        <mat-label>Connection String</mat-label>
+        <input matInput [(ngModel)]="infoRequest.connectionString" placeholder="mongodb://localhost" />
+      </mat-form-field>
+    </section>
+    <section>
+      <!--[disabled] = "infoRequest.server=='' || infoRequest.connectionString==''"-->
+      <button mat-raised-button color="primary" (click)="getClusterInfo()">Get Info</button>
+    </section>
+  </mat-card>
+  <div *ngIf="showInfo">
+    <mat-card style="margin-top: 20px">
+      <div>
+        <table class="info-table">
+          <tr class="info-header">
+            Mongo DB:
+          </tr>
+          <tr>
+            <td class="info-key">Host</td>
+            <td>{{ infoResponse.host }}</td>
+          </tr>
+          <tr>
+            <td class="info-key">Process</td>
+            <td>{{ infoResponse.process }}</td>
+          </tr>
+          <tr>
+            <td class="info-key">Version</td>
+            <td>{{ infoResponse.version }}</td>
+          </tr>
+          <tr>
+            <td class="info-key">Type</td>
+            <td>{{ infoResponse.cluster }}</td>
+          </tr>
+          <tr *ngIf="infoResponse.shards != null">
+            <td class="info-key" [attr.rowspan]="infoResponse.shards.length + 1">Shards</td>
+          </tr>
+          <tr *ngFor="let shard of infoResponse.shards">
+            <td>{{ shard.host }}</td>
+          </tr>
+        </table>
+      </div>
+      <div>
+        <table class="info-table">
+          <tr class="info-header">
+            Server Info:
+          </tr>
+          <tr>
+            <td class="info-key">Process</td>
+            <td>{{ infoResponse.process }}</td>
+          </tr>
+          <tr>
+            <td class="info-key">Version</td>
+            <td>{{ infoResponse.version }}</td>
+          </tr>
+          <tr>
+            <td class="info-key">OS</td>
+            <td>{{ infoResponse.hostInfo.os.name }}</td>
+          </tr>
+          <tr>
+            <td class="info-key">System Version</td>
+            <td>{{ infoResponse.hostInfo.os.version }}</td>
+          </tr>
+          <tr>
+            <td class="info-key">Memory</td>
+            <td>{{ round((infoResponse.hostInfo.system.memSizeMB / 1024) * 100) / 100 }} GB</td>
+          </tr>
+          <tr>
+            <td class="info-key">Cores</td>
+            <td>{{ infoResponse.hostInfo.system.numCores }}</td>
+          </tr>
+          <tr>
+            <td class="info-key">Numa Enabled</td>
+            <td>{{ infoResponse.hostInfo.system.numaEnabled }}</td>
+          </tr>
+          <tr>
+            <td class="info-key">Storage Engine</td>
+            <td>{{ infoResponse.serverStatus.storageEngine.name }}</td>
+          </tr>
+        </table>
+      </div>
+      <p>{{ info }}</p>
+    </mat-card>
+  </div>
+</div>

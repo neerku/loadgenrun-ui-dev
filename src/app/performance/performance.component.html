@@ -1,0 +1,90 @@
+<div class="container-fluid mt-3" fxFlexAlign="stretch">
+  <mat-horizontal-stepper linear="false" (selectionChange)="onStepChange()" #stepper>
+    <mat-step>
+      <ng-template matStepLabel>Create Load Profile</ng-template>
+      <mat-card>
+        <div class="border-bottom" *ngFor="let profile of profiles; let profileIndex = index">
+          <br />
+          <b>Stage {{ profileIndex + 1 }}</b>
+          <table style="width: 100%; table-layout: fixed">
+            <tr *ngFor="let operation of profiles[profileIndex].operations; let opIndex = index">
+              <td style="text-transform: capitalize">
+                {{ operation.type }}
+              </td>
+              <td>
+                <mat-form-field appearance="legacy">
+                  <mat-label>Weightage (%)</mat-label>
+                  <input
+                    matInput
+                    [(ngModel)]="operation.weightage"
+                    placeholder="Percent"
+                    [disabled]="!operation.enabled"
+                  />
+                </mat-form-field>
+              </td>
+              <td>
+                <mat-slide-toggle color="primary" [(ngModel)]="operation.enabled"></mat-slide-toggle>
+              </td>
+            </tr>
+          </table>
+          <mat-form-field appearance="legacy">
+            <mat-label>Duration</mat-label>
+            <input matInput [(ngModel)]="profile.duration" placeholder="Minutes" type="number"
+          /></mat-form-field>
+          <mat-form-field appearance="legacy">
+            <mat-label>Threads</mat-label>
+            <input matInput [(ngModel)]="profile.numOfThreads" placeholder="Threads" type="number"
+          /></mat-form-field>
+          <button mat-raised-button color="primary" (click)="addProfile()">Add</button>
+          <button mat-raised-button color="primary" (click)="removeProfile(profileIndex)">Remove</button>
+        </div>
+        <br />
+        <button mat-raised-button color="primary" >Save Profile</button>
+      </mat-card>
+    </mat-step>
+
+    <mat-step>
+      <ng-template matStepLabel>Configure Test</ng-template>
+      <mat-card>
+        <mat-form-field>
+          <mat-label>Connnection String</mat-label>
+          <input matInput placeholder="mongodb://localhost" [(ngModel)]="loadProfileRequest.connString" />
+        </mat-form-field>
+        <br />
+        <mat-form-field>
+          <mat-label>Target Database</mat-label>
+          <input matInput placeholder="Database" [(ngModel)]="loadProfileRequest.dbName" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Target Collection</mat-label>
+          <input matInput placeholder="Collection" [(ngModel)]="loadProfileRequest.collName" />
+        </mat-form-field>
+        <mat-form-field appearance="legacy">
+          <mat-label>Choose profile</mat-label>
+          <mat-select [(ngModel)]="selectedProfile">
+            <mat-option *ngFor="let profile of savedProfile" [value]="profile">{{ profile.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="previewProfile()">Preview</button>
+        <br />
+        <mat-form-field appearance="legacy">
+          <mat-label>Choose Template</mat-label>
+          <mat-select [(ngModel)]="selectedTemplate">
+            <mat-option *ngFor="let template of savedTemplate" [value]="template">{{ template.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-raised-button color="primary">Preview</button>
+        <br />
+        <br />
+        <button mat-raised-button color="primary">Run Test</button>
+      </mat-card>
+    </mat-step>
+
+    <mat-step>
+      <ng-template matStepLabel>Reports</ng-template>
+      <mat-card>
+        <br />
+      </mat-card>
+    </mat-step>
+  </mat-horizontal-stepper>
+</div>

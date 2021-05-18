@@ -1,0 +1,24 @@
+<h2 mat-dialog-title>Choose Content Type for path: {{ data.path }}</h2>
+<div mat-dialog-content>
+  <mat-accordion>
+    <mat-expansion-panel hideToggle *ngFor="let type of data.types">
+      <mat-expansion-panel-header>
+        <mat-panel-title style="text-transform: capitalize"> {{ type.name }} </mat-panel-title>
+        <mat-panel-description> All {{ type.name }} related types </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <button
+        mat-button
+        (click)="close(type.name + '.' + value.value)"
+        class="option-button"
+        *ngFor="let value of type.values"
+      >
+        {{ value.name }}
+      </button>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button (click)="close('')" cdkFocusInitial>Close</button>
+</div>

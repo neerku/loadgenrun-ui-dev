@@ -1,0 +1,157 @@
+/*
+ * Entry point of global application style.
+ * Component-specific style should not go here and be included directly as part of the components.
+ */
+
+// Theme variables, must be included before the libraries to allow overriding defaults
+@import "theme/theme-variables";
+
+// 3rd party libraries
+@import "~material-design-icons-iconfont/src/material-design-icons";
+
+// Angular Material custom theme
+// The mixins below must be included once so we separated them from the variables
+@import "~@angular/material/theming";
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat-core();
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include angular-material-theme($app-theme);
+
+// Theme customization
+@import "theme/theme";
+
+@import "~jsoneditor/dist/jsoneditor.min.css";
+textarea.jsoneditor-text {
+  min-height: 350px;
+}
+
+.logo {
+  width: 100px;
+  margin: auto;
+}
+
+.peerislands-logo {
+  border-right: 1px solid #bbbb7f;
+}
+
+mat-sidenav {
+  width: 200px;
+}
+
+.navbar {
+  box-shadow: 1px 2px 4px 0 rgb(0 0 0 / 10%);
+}
+
+.mat-step-header .mat-step-icon-selected,
+.mat-step-header .mat-step-icon-state-done,
+.mat-step-header .mat-step-icon-state-edit,
+.mat-flat-button.mat-primary,
+.mat-raised-button.mat-primary,
+.mat-fab.mat-primary,
+.mat-mini-fab.mat-primary,
+.mat-tab-group.mat-primary .mat-ink-bar,
+.mat-tab-nav-bar.mat-primary .mat-ink-bar {
+  background-color: $theme;
+}
+
+.mat-tab-label-active {
+  color: $theme;
+}
+
+.mat-button.mat-primary,
+.mat-icon-button.mat-primary,
+.mat-stroked-button.mat-primary {
+  color: $theme;
+}
+
+.jsoneditor {
+  border-right: 0;
+  border-left: 0;
+  border-top: 1px solid $theme;
+  border-bottom: 1px solid $theme;
+}
+
+.jsoneditor-menu {
+  background-color: $theme;
+  border-bottom: 1px solid $theme;
+}
+
+.mat-tab-label .mat-tab-label-content {
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.mat-card:not([class*="mat-elevation-z"]) {
+  box-shadow: 0px 0px 5px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
+}
+
+.mat-drawer-inner-container {
+  background-color: $seconday-theme;
+}
+
+.mat-expansion-panel-header-title {
+  text-transform: uppercase;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.mat-accordion {
+  .mat-expansion-panel-header.mat-expanded,
+  .mat-expansion-panel-header.mat-expanded:focus,
+  .mat-expansion-panel-header.mat-expanded:hover {
+    background-color: $seconday-theme;
+    .mat-expansion-panel-header-title {
+      color: $theme;
+    }
+  }
+}
+
+.mat-tab-header {
+  box-shadow: 1px 2px 4px 0 rgb(0 0 0 / 10%);
+}
+
+.mat-card {
+  border: 1px solid $seconday-theme;
+  box-shadow: none !important;
+  .mat-expansion-panel {
+    background-color: $seconday-theme;
+    border-radius: 0;
+    box-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    margin-bottom: 5px;
+  }
+  .mat-expansion-panel-body {
+    background-color: #fff;
+  }
+}
+
+.mat-accordion .mat-expansion-panel:first-of-type {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.mat-form-field.mat-focused .mat-form-field-label {
+  caret-color: $theme;
+  color: $theme;
+}
+
+.mat-form-field.mat-focused .mat-form-field-ripple {
+  background-color: $theme;
+}
+
+.mat-form-field {
+  width: 45%;
+  margin: 0 !important;
+  margin-top: 5px !important;
+  padding-right: 20px !important;
+}
+
+.non-input .mat-form-field-underline{
+  height: 0 !important;
+ }

@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>Profile Preview</h2>
+<div mat-dialog-content>
+  <div *ngFor="let profile of data.profiles; let profileIndex = index">
+    <b>Stage {{ profileIndex + 1 }}</b>
+    <table style="width: 100%; table-layout: fixed">
+      <tr *ngFor="let operation of data.profiles[profileIndex].operations; let opIndex = index">
+        <td style="text-transform: capitalize" *ngIf="operation.enabled">Operation type: {{ operation.type }}</td>
+        <td style="text-transform: capitalize" *ngIf="operation.enabled">Weightage: {{ operation.weightage }}</td>
+      </tr>
+    </table>
+    <br />
+    <p>Duration: {{ profile.duration }}</p>
+    <p>Number of Threads: {{ profile.numOfThreads }}</p>
+  </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button (click)="close()" cdkFocusInitial>Close</button>
+</div>
