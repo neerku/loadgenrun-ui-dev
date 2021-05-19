@@ -41,7 +41,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
     }
   }
 
-  constructor(private keyholeService: KeyholeService, private dialog: MatDialog) {}
+  constructor(private keyholeService: KeyholeService, private dialog: MatDialog) { }
   file: any;
   fileContent: string;
   templateToLoad: any;
@@ -49,45 +49,14 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   uuid: string;
   infoResponse: any;
   showDBDetails: boolean;
+  timer: any;
+  //Cosmos to Mongo Properties
   isCosmosConnectionValid: boolean = false;
   isMongoConnectionValid: boolean = false;
   cosmosDbList: [];
-  projectList:[];
+  projectList: [];
   isBackupStarted: boolean = false;
   Project: Project = {
-    MigrationName: '',
-     Configuration: {
-      CosmosHost: '',
-      CosmosAuthenticationDatabase: '',
-      CosmosUser: '',
-      CosmosPassword: '',
-      DumpAll: true,
-      CosmosDatabases: '',
-      StorageAccountName: '',
-      MongoUri: '',
-    },
-    VMConfiguration: {
-      ResourceGroupName: '',
-      Location: '',
-      MachineName: '',      
-      OsName:'',
-      UserName: '',
-      Password: '',
-      Size: 1024,
-    },
-    AzAccount: {
-      ClientId: '',
-      ClientSecret: '',
-      TenantId: '',
-      SubscriptionId: '',
-    }
-  };
-
-  timer: any;
-  
-
-clearFields(): void {
-  this.Project = {
     MigrationName: '',
     Configuration: {
       CosmosHost: '',
@@ -113,18 +82,50 @@ clearFields(): void {
       ClientSecret: '',
       TenantId: '',
       SubscriptionId: '',
-    }
-  }
-  this.isCosmosConnectionValid = false
-  this.isMongoConnectionValid= false;
-  this.cosmosDbList= [];
-  this.isBackupStarted = false;
+    },
+  };
 
-}
+  //validation properties
+  tabIndex: number = 0;
+  validationError: string = '';
+
+  clearFields(): void {
+    this.Project = {
+      MigrationName: '',
+      Configuration: {
+        CosmosHost: '',
+        CosmosAuthenticationDatabase: '',
+        CosmosUser: '',
+        CosmosPassword: '',
+        DumpAll: true,
+        CosmosDatabases: '',
+        StorageAccountName: '',
+        MongoUri: '',
+      },
+      VMConfiguration: {
+        ResourceGroupName: '',
+        Location: '',
+        MachineName: '',
+        OsName: '',
+        UserName: '',
+        Password: '',
+        Size: 1024,
+      },
+      AzAccount: {
+        ClientId: '',
+        ClientSecret: '',
+        TenantId: '',
+        SubscriptionId: '',
+      },
+    };
+    this.isCosmosConnectionValid = false;
+    this.isMongoConnectionValid = false;
+    this.cosmosDbList = [];
+    this.isBackupStarted = false;
+  }
 
   saveTemplate(templateData: any): void {
     console.log(templateData);
-
   }
 
   startBackup(): void {
@@ -133,7 +134,6 @@ clearFields(): void {
       console.log(result);
       this.isBackupStarted = true;
     });
-
   }
 
   validateCosmosDetails(): void {
@@ -142,12 +142,11 @@ clearFields(): void {
       CosmosHost: this.Project.Configuration.CosmosHost,
       CosmosAuthenticationDatabase: this.Project.Configuration.CosmosAuthenticationDatabase,
       CosmosUser: this.Project.Configuration.CosmosUser,
-      CosmosPassword: this.Project.Configuration.CosmosPassword
-    }
+      CosmosPassword: this.Project.Configuration.CosmosPassword,
+    };
     this.keyholeService.validateCosmos(cosmosDetails).subscribe((isValid: boolean) => {
       this.isCosmosConnectionValid = isValid;
-      if (isValid)
-        this.getDatabaseList();
+      if (isValid) this.getDatabaseList();
     });
   }
 
@@ -157,55 +156,71 @@ clearFields(): void {
       CosmosHost: this.Project.Configuration.CosmosHost,
       CosmosAuthenticationDatabase: this.Project.Configuration.CosmosAuthenticationDatabase,
       CosmosUser: this.Project.Configuration.CosmosUser,
-      CosmosPassword: this.Project.Configuration.CosmosPassword
-    }
+      CosmosPassword: this.Project.Configuration.CosmosPassword,
+    };
     this.keyholeService.getDbList(cosmosDetails).subscribe((dbList: []) => {
       this.cosmosDbList = dbList;
-      if (dbList.length > 0)
+      if (dbList.length > 0) {
         this.isCosmosConnectionValid = true;
-    });
+        this.validationError = '';
+      }
+    }, error => { this.validationError = "Invalid input."; });
   }
 
-  getProjectListInInterval(){
-    setInterval(() => this.getProjectList(),120000);
+  getProjectListInInterval() {
+    setInterval(() => this.getProjectList(), 120000);
   }
-
 
   getProjectList(): void {
-    this.keyholeService.getProjectList().subscribe((projects:[]) => {
+    this.keyholeService.getProjectList().subscribe((projects: []) => {
       this.projectList = projects;
-    })
+    });
   }
 
   validateMongoDBConnection(): void {
     var mongoDetails = {
-
-      Uri: this.Project.Configuration.MongoUri
-    }
+      Uri: this.Project.Configuration.MongoUri,
+    };
     this.keyholeService.validateMongo(mongoDetails).subscribe((isValid: boolean) => {
       this.isMongoConnectionValid = isValid;
-    })
+      if(isValid)
+      this.validationError = '';
+      else
+      this.validationError = 'Invalid input.';
+    });
   }
 
   onStepChange(): void {
-
+    console.log(this);
   }
 
-  onTabChanged(): void {
+  onTabChanged(event: any): void {
+    console.log(this);
+    //let clickedIndex = event.index;
 
   }
   ngOnInit(): void {
     this.clearFields();
-    this.getProjectListInInterval()
+    this.getProjectList();
+    this.getProjectListInInterval();
   }
   ngOnDestroy() {
     if (this.timer != null) {
       clearInterval(this.timer);
     }
   }
+  // validations
+  goPreviousStep() {
+    if (this.tabIndex > 0)
+      this.tabIndex -= 1;
+  }
+  goNextStep() {
+    if (this.tabIndex <= 2 && this.tabIndex >= 0)
+      this.tabIndex += 1;
+  }
 }
 interface Project {
-  MigrationName: string;  
+  MigrationName: string;
   Configuration: {
     CosmosHost: string;
     CosmosAuthenticationDatabase: string;
@@ -215,7 +230,7 @@ interface Project {
     CosmosDatabases: string;
     StorageAccountName: string;
     MongoUri: string;
-  }
+  };
   VMConfiguration: {
     ResourceGroupName: string;
     Location: string;
@@ -224,13 +239,11 @@ interface Project {
     UserName: string;
     Password: string;
     Size: number;
-  }
+  };
   AzAccount: {
     ClientId: string;
     ClientSecret: string;
     TenantId: string;
     SubscriptionId: string;
-  }
+  };
 }
-
-
