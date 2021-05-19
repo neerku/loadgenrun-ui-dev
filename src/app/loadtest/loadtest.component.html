@@ -130,39 +130,38 @@
                 </mat-form-field>
               </section>
               <div>
-                <br />
+                <br/>
                 <button mat-raised-button color="primary" (click)="startBackup()" class="pull-right">Start</button>
+                <mat-label class="mat-label" *ngIf="isBackupStarted" >Infra creation started successfully.Visit <a routerLink="/first-component">History</a> tab for status updates.</mat-label>
               </div>
             </mat-tab>
           </mat-tab-group>
         </section>
-        <div style="text-align: right; margin: 20px" *ngIf="isBackupStarted">
-          <button mat-raised-button class="bg-secondary text-white" matStepperNext>Next</button>
-        </div>
+       
+        
       </mat-card>
     </mat-step>
     <div>
       <mat-step>
-        <ng-template matStepLabel>Backup</ng-template>
+        <ng-template matStepLabel>InfraCreation</ng-template>
         <div class="mt-2">
           <h6 class="sub-header" style="margin-bottom: 20px;">Migration History</h6>
           <table class="table">
             <thead>
               <tr>
                 <th scope="col">Migration Name</th>
-                <th scope="col">Virtual Machine OS</th>
-                <th scope="col">Requested Date</th>                
-                <th scope="col">Completed Date</th>
+                <th scope="col">Requested Date</th>
+                <th scope="col">Machine Name</th>                
+                <th scope="col">Status</th>
                 <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let project of projectList">
-                
                 <td>{{project.migrationName}}</td>
-                <td>{{project.migrationName}}</td>
-                <td>{{project.migrationName}}</td>
-                <td>{{project.migrationName}}</td>
+                <td>{{project.requestedDateTime}}</td>
+                <td>{{project.vmConfiguration.machineName}}</td>
+                <td>{{project.migrationStatus}}</td>
                 <td>
                   <mat-icon aria-hidden="false" aria-label="Example edit icon" (click)="startBackup()">edit</mat-icon>
                   <mat-icon aria-hidden="false" aria-label="Example refresh icon" (click)="startBackup()">refresh

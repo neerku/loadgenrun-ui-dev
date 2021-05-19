@@ -6,6 +6,7 @@ import { JsonTypePickerDialogComponent } from '@app/json-type-picker-dialog/json
 import { SaveTemplateDialogComponent } from '@app/save-template-dialog/save-template-dialog.component';
 import { TemplatePreviewDialogComponent } from '@app/template-preview-dialog/template-preview-dialog.component';
 import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
+import { interval, Subscription } from 'rxjs';
 //import { SignKeyObjectInput } from 'crypto';
 
 @Component({
@@ -40,11 +41,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
     }
   }
 
-  constructor(private keyholeService: KeyholeService, private dialog: MatDialog) {
-
-
-
-  }
+  constructor(private keyholeService: KeyholeService, private dialog: MatDialog) {}
   file: any;
   fileContent: string;
   templateToLoad: any;
@@ -57,10 +54,9 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   cosmosDbList: [];
   projectList:[];
   isBackupStarted: boolean = false;
-
   Project: Project = {
     MigrationName: '',
-    Configuration: {
+     Configuration: {
       CosmosHost: '',
       CosmosAuthenticationDatabase: '',
       CosmosUser: '',
@@ -88,6 +84,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   };
 
   timer: any;
+  
 
 clearFields(): void {
   this.Project = {
@@ -169,6 +166,17 @@ clearFields(): void {
     });
   }
 
+  getProjectListInInterval(){
+    setInterval(() => this.getProjectList(),120000);
+  }
+
+
+  getProjectList(): void {
+    this.keyholeService.getProjectList().subscribe((projects:[]) => {
+      this.projectList = projects;
+    })
+  }
+
   validateMongoDBConnection(): void {
     var mongoDetails = {
 
@@ -188,9 +196,7 @@ clearFields(): void {
   }
   ngOnInit(): void {
     this.clearFields();
-    this.keyholeService.getProjectList().subscribe((projects:[]) => {
-      this.projectList = projects;
-    })
+    this.getProjectListInInterval()
   }
   ngOnDestroy() {
     if (this.timer != null) {
