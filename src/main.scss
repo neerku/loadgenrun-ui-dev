@@ -155,3 +155,19 @@ mat-sidenav {
 .non-input .mat-form-field-underline{
   height: 0 !important;
  }
+
+ .sub-header{
+   margin-bottom: 5px;
+   margin-top: 35px;
+   color: green;
+   text-transform: uppercase;
+   font-weight: 600;
+ }
+
+.mt-20 {
+margin-top: 20px;
+}
+
+ .table td, .table th {
+  vertical-align: middle;
+}

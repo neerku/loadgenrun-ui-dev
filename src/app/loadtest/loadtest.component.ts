@@ -189,7 +189,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   }
 
   getProjectListInInterval() {
-    setInterval(() => this.getProjectList(), 120000);
+    setInterval(() => this.getProjectList(), 5000);
   }
 
   getProjectList(): void {

@@ -8,17 +8,25 @@
           <mat-tab-group (selectedTabChange)="onTabChanged($event)" [(selectedIndex)]="tabIndex">
             <mat-tab label="instructions">
               <section class="form-fields">
-                <p class="mt-20">
-                  <i>Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-                    industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type
-                    and scrambled it to make a type specimen book. It has survived not only five centuries, but also the
-                    leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s
-                    with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop
-                    publishing software like Aldus PageMaker including versions of Lorem Ipsum.</i>
-                </p>
+                <h6 class="sub-header mt-20">Welcome to CosmosToMongo</h6>
+                <div class="instructions">
+                  <p>This tool allows you to migrate an existing MongoDB cluster hosted on AzureCosmos to MongoDB Atlas
+                    with minimal downtime. </p>
+                  <p>Steps:</p>
+                  <ol>
+                    <li>Provide the connection details for your existing (source) cluster</li>
+                    <li>Provide the Source details for your target cluster.</li>
+                    <li>Provide Infra details to backup your Source.</li>
+                    <li>Monitor your Backup , Restore , ChangeStream.</li>
+                  </ol>
+                  <p>View <a href="/">CosmosToMongo</a> documentation for any further details.</p><br/>
+                  <p>Provide name of this task and will copy the data from your source cluster to the destination
+                    cluster.<br />
+                    Once your data is copied, point your application to target cluster.</p>
+                </div>
                 <mat-form-field appearance="legacy">
                   <mat-label>Task Name</mat-label>
-                  <input matInput [(ngModel)]="Project.MigrationName" placeholder="" required />
+                  <input matInput [(ngModel)]="Project.MigrationName" placeholder="Name your task" required />
                 </mat-form-field>
                 <div style="text-align: right;">
                   <button mat-raised-button color="primary" (click)="goNextStep()" class="pull-right"
@@ -30,20 +38,20 @@
               <section class="form-fields">
                 <mat-form-field appearance="legacy">
                   <mat-label>Host URL</mat-label>
-                  <input matInput [(ngModel)]="Project.Configuration.CosmosHost" placeholder="" required />
+                  <input matInput [(ngModel)]="Project.Configuration.CosmosHost" placeholder="sample.mongo.cosmos.azure.com:10255" required />
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>Authentication Database</mat-label>
-                  <input matInput [(ngModel)]="Project.Configuration.CosmosAuthenticationDatabase" placeholder=""
+                  <input matInput [(ngModel)]="Project.Configuration.CosmosAuthenticationDatabase" placeholder="Authenticating database e.g. Admin"
                     required />
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>User Name</mat-label>
-                  <input matInput [(ngModel)]="Project.Configuration.CosmosUser" placeholder="" required />
+                  <input matInput [(ngModel)]="Project.Configuration.CosmosUser" placeholder="Database use name" required />
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>Password</mat-label>
-                  <input matInput [(ngModel)]="Project.Configuration.CosmosPassword" placeholder="" type="password"
+                  <input matInput [(ngModel)]="Project.Configuration.CosmosPassword" placeholder="Password" type="password"
                     required />
                 </mat-form-field>
               </section>
@@ -87,7 +95,7 @@
                 <span *ngIf="isMongoConnectionValid" class="validate-check">
                   <mat-icon aria-hidden="false" aria-label="Example check_circle icon">check_circle</mat-icon>
                 </span>
-                <p><i>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</i></p>
+                <p><small>e.g.</small> <code>mongodb://[username]:[password]@mongodb1.example.com:27017,mongodb2.example.com:27017,mongodb3.example.com:27017/myFirstDatabase?ssl=true&replicaSet=atlas-3odlmy-shard-0&authSource=[authenticatingdatabase]</code></p>
                 <button mat-raised-button color="primary" (click)="validateMongoDBConnection()">Validate</button>
                 <span>{{validationError}}</span>
                 <div style="text-align: right;">
@@ -191,12 +199,15 @@
               <td>{{ project.vmConfiguration.machineName }}</td>
               <td>{{ project.migrationStatus }}</td>
               <td>
-                <mat-icon aria-hidden="false" color="primary" aria-label="Edit" title="Edit" (click)="editProject(project.id)">edit
+                <mat-icon aria-hidden="false" color="primary" aria-label="Edit" title="Edit"
+                  (click)="editProject(project.id)">edit
                 </mat-icon>
-                <mat-icon aria-hidden="false" color="primary" aria-label="Refresh" title="Refresh" (click)="refreshProject(project.id)">
+                <mat-icon aria-hidden="false" color="primary" aria-label="Refresh" title="Refresh"
+                  (click)="refreshProject(project.id)">
                   refresh
                 </mat-icon>
-                <mat-icon aria-hidden="false" color="accent" aria-label="Go to Migration" title="Go to Migration" (click)="gotoMigration(stepper,project)">
+                <mat-icon aria-hidden="false" color="accent" aria-label="Go to Migration" title="Go to Migration"
+                  (click)="gotoMigration(stepper,project)">
                   launch</mat-icon>
               </td>
             </tr>
@@ -240,8 +251,10 @@
                       <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
                       <td>{{ infraCreationProject.migrationStatus }}</td>
                       <td>
-                        <mat-icon aria-hidden="false" color="primary" aria-label="Start Backup" title="Start Backup"
-                          (click)="backupProject(infraCreationProject.id)">backup</mat-icon>
+                          <button mat-icon-button color="primary" aria-label="Start Backup" title="Start Backup"
+                          (click)="backupProject(infraCreationProject.id)">
+                            <mat-icon>backup</mat-icon> Start
+                          </button>
                       </td>
                     </tr>
                   </tbody>
@@ -267,8 +280,10 @@
                       <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
                       <td>{{ infraCreationProject.migrationStatus }}</td>
                       <td>
-                        <mat-icon aria-hidden="false" color="primary" aria-label="Start Restore" title="Start Restore"
-                          (click)="restoreProject(infraCreationProject.id)">restore</mat-icon>
+                          <button mat-icon-button color="primary" aria-label="Start Restore" title="Start Restore"
+                          (click)="restoreProject(infraCreationProject.id)">
+                            <mat-icon>restore</mat-icon> Start
+                          </button>
                       </td>
                     </tr>
                   </tbody>
@@ -294,8 +309,9 @@
                       <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
                       <td>{{ infraCreationProject.migrationStatus }}</td>
                       <td>
-                        <mat-icon aria-hidden="false" color="primary" aria-label="Start Change Event" title="Start Change Event"
-                          (click)="changeEventProject(infraCreationProject.id)">visibility</mat-icon>
+                        <button mat-icon-button color="primary" aria-label="Start Change Event" title="Start Change Event" (click)="changeEventProject(infraCreationProject.id)">
+                          <mat-icon>visibility</mat-icon> Start
+                        </button>
                       </td>
                     </tr>
                   </tbody>
