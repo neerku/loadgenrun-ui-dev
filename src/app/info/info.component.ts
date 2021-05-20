@@ -19,7 +19,6 @@ export class InfoComponent implements OnInit {
 
   getClusterInfo(): void {
     console.log(this.infoRequest);
-    
   }
 
   ngOnInit(): void {

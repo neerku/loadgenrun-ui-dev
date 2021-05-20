@@ -24,13 +24,13 @@ export class KeyholeService {
   }
 
   getProject(id: string) {
-    return this.http.get(this.apiUrl + '/project/id='+id);
+    return this.http.get(this.apiUrl + '/project?id=' + id);
   }
-  
+
   getProjectList() {
     return this.http.get(this.apiUrl + '/project');
   }
- 
+
   validateCosmos(request: any) {
     return this.http.post(this.apiUrl + '/utility/validate/cosmos', request);
   }
@@ -38,8 +38,4 @@ export class KeyholeService {
   validateMongo(request: any) {
     return this.http.post(this.apiUrl + '/utility/validate/mongo', request);
   }
-
-  
-
-  
 }

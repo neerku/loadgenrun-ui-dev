@@ -7,6 +7,7 @@ import { SaveTemplateDialogComponent } from '@app/save-template-dialog/save-temp
 import { TemplatePreviewDialogComponent } from '@app/template-preview-dialog/template-preview-dialog.component';
 import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
 import { interval, Subscription } from 'rxjs';
+import { MatStepper } from '@angular/material/stepper';
 //import { SignKeyObjectInput } from 'crypto';
 
 @Component({
@@ -51,6 +52,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   showDBDetails: boolean;
   timer: any;
   //Cosmos to Mongo Properties
+  infraCreationProject: any = null;
   isCosmosConnectionValid: boolean = false;
   isMongoConnectionValid: boolean = false;
   cosmosDbList: [];
@@ -64,7 +66,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
       CosmosUser: '',
       CosmosPassword: '',
       DumpAll: true,
-      CosmosDatabases: '',
+      CosmosDatabases: [],
       StorageAccountName: '',
       MongoUri: '',
     },
@@ -98,7 +100,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
         CosmosUser: '',
         CosmosPassword: '',
         DumpAll: true,
-        CosmosDatabases: '',
+        CosmosDatabases: [],
         StorageAccountName: '',
         MongoUri: '',
       },
@@ -128,14 +130,33 @@ export class LoadtestComponent implements OnInit, OnDestroy {
     console.log(templateData);
   }
 
-  startBackup(): void {
+  saveConfiguration(stepper: MatStepper): void {
     this.keyholeService.saveProject(this.Project).subscribe((result: any) => {
       this.clearFields();
       console.log(result);
       this.isBackupStarted = true;
+      stepper.next();
     });
   }
-
+  gotoMigration(stepper: MatStepper, project: any) {
+    this.infraCreationProject = project;
+    stepper.next();
+  }
+  editProject(projectId: any) {
+    console.log(projectId);
+  }
+  refreshProject(projectId: any) {
+    console.log(projectId);
+  }
+  backupProject(projectId: any) {
+    console.log(projectId);
+  }
+  restoreProject(projectId: any) {
+    console.log(projectId);
+  }
+  changeEventProject(projectId: any) {
+    console.log(projectId);
+  }
   validateCosmosDetails(): void {
     console.log(this.Project);
     var cosmosDetails = {
@@ -183,15 +204,17 @@ export class LoadtestComponent implements OnInit, OnDestroy {
     };
     this.keyholeService.validateMongo(mongoDetails).subscribe((isValid: boolean) => {
       this.isMongoConnectionValid = isValid;
-      if(isValid)
-      this.validationError = '';
+      if (isValid)
+        this.validationError = '';
       else
-      this.validationError = 'Invalid input.';
+        this.validationError = 'Invalid input.';
     });
   }
 
   onStepChange(): void {
     console.log(this);
+    //if(stepper.selectedIndex === stepper._steps.length-2 && this.infraCreationProject == null)
+    //stepper.previous();
   }
 
   onTabChanged(event: any): void {
@@ -227,7 +250,7 @@ interface Project {
     CosmosUser: string;
     CosmosPassword: string;
     DumpAll: boolean;
-    CosmosDatabases: string;
+    CosmosDatabases: [];
     StorageAccountName: string;
     MongoUri: string;
   };

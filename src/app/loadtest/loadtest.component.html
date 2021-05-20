@@ -100,7 +100,7 @@
             </mat-tab>
             <mat-tab label="Virtual Machine Configuration" disabled="{{!isMongoConnectionValid}}">
               <section style="margin-top: 20px; margin-bottom: 10px">
-                <h6 class="sub-header">Service Principal Details</h6>
+                <h6 class="sub-header">Service Priciple Details</h6>
                 <mat-form-field appearance="legacy">
                   <mat-label>ClientId</mat-label>
                   <input matInput [(ngModel)]="Project.AzAccount.ClientId" placeholder="" required />
@@ -148,13 +148,15 @@
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>Password</mat-label>
-                  <input matInput [(ngModel)]="Project.VMConfiguration.Password" placeholder="" required />
+                  <input matInput [(ngModel)]="Project.VMConfiguration.Password" placeholder="" required
+                    type="password" />
                 </mat-form-field>
               </section>
               <div style="text-align: right;">
                 <button mat-raised-button color="primary" (click)="goPreviousStep()"
                   class="pull-right">Previous</button>
-                <button mat-raised-button color="primary" (click)="startBackup()" class="pull-right" disabled="{{Project.AzAccount.ClientId == '' || Project.AzAccount.ClientSecret == '' || Project.AzAccount.TenantId == '' ||
+                <button mat-raised-button color="primary" (click)="saveConfiguration(stepper)" class="pull-right"
+                  disabled="{{Project.AzAccount.ClientId == '' || Project.AzAccount.ClientSecret == '' || Project.AzAccount.TenantId == '' ||
                 Project.AzAccount.SubscriptionId == '' || Project.VMConfiguration.OsName == '' || Project.VMConfiguration.ResourceGroupName == '' ||
                 Project.VMConfiguration.Location == '' || Project.VMConfiguration.MachineName == '' || Project.VMConfiguration.Size == 0 ||
                 Project.VMConfiguration.UserName == '' || Project.VMConfiguration.Password == ''
@@ -177,7 +179,7 @@
             <tr>
               <th scope="col">Migration Name</th>
               <th scope="col">Requested Date</th>
-              <th scope="col">Task Name</th>
+              <th scope="col">Machine Name</th>
               <th scope="col">Status</th>
               <th scope="col">Actions</th>
             </tr>
@@ -189,9 +191,13 @@
               <td>{{ project.vmConfiguration.machineName }}</td>
               <td>{{ project.migrationStatus }}</td>
               <td>
-                <mat-icon aria-hidden="false" aria-label="Example edit icon" (click)="startBackup()">edit</mat-icon>
-                <mat-icon aria-hidden="false" aria-label="Example refresh icon" (click)="startBackup()">refresh
+                <mat-icon aria-hidden="false" color="primary" aria-label="Edit" title="Edit" (click)="editProject(project.id)">edit
                 </mat-icon>
+                <mat-icon aria-hidden="false" color="primary" aria-label="Refresh" title="Refresh" (click)="refreshProject(project.id)">
+                  refresh
+                </mat-icon>
+                <mat-icon aria-hidden="false" color="accent" aria-label="Go to Migration" title="Go to Migration" (click)="gotoMigration(stepper,project)">
+                  launch</mat-icon>
               </td>
             </tr>
           </tbody>
@@ -216,23 +222,26 @@
         <section>
           <mat-tab-group (selectedTabChange)="onTabChanged($event)">
             <mat-tab label="backup">
-              <section class="mt-20">
+              <section class="mt-20" *ngIf="infraCreationProject">
                 <table class="table">
                   <thead>
                     <tr>
-                      <th>Task Name</th>
-                      <th>CreationDate/th>
-                      <th>Status</th>
-                      <th>Action</th>
+                      <th scope="col">Migration Name</th>
+                      <th scope="col">Requested Date</th>
+                      <th scope="col">Machine Name</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>d</td>
-                      <td>f</td>
-                      <td>f</td>
+                      <td>{{ infraCreationProject.migrationName }}</td>
+                      <td>{{ infraCreationProject.requestedDateTime }}</td>
+                      <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
+                      <td>{{ infraCreationProject.migrationStatus }}</td>
                       <td>
-                        <button mat-raised-button color="primary" class="pull-right">Start</button>
+                        <mat-icon aria-hidden="false" color="primary" aria-label="Start Backup" title="Start Backup"
+                          (click)="backupProject(infraCreationProject.id)">backup</mat-icon>
                       </td>
                     </tr>
                   </tbody>
@@ -240,23 +249,26 @@
               </section>
             </mat-tab>
             <mat-tab label="restore">
-              <section class="mt-20">
+              <section class="mt-20" *ngIf="infraCreationProject">
                 <table class="table">
                   <thead>
                     <tr>
-                      <th>Task Name</th>
-                      <th>CreationDate/th>
-                      <th>Status</th>
-                      <th>Action</th>
+                      <th scope="col">Migration Name</th>
+                      <th scope="col">Requested Date</th>
+                      <th scope="col">Machine Name</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>d</td>
-                      <td>f</td>
-                      <td>f</td>
+                      <td>{{ infraCreationProject.migrationName }}</td>
+                      <td>{{ infraCreationProject.requestedDateTime }}</td>
+                      <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
+                      <td>{{ infraCreationProject.migrationStatus }}</td>
                       <td>
-                        <button mat-raised-button color="primary" class="pull-right">Start</button>
+                        <mat-icon aria-hidden="false" color="primary" aria-label="Start Restore" title="Start Restore"
+                          (click)="restoreProject(infraCreationProject.id)">restore</mat-icon>
                       </td>
                     </tr>
                   </tbody>
@@ -264,40 +276,30 @@
               </section>
             </mat-tab>
             <mat-tab label="change events">
-              <section class="mt-20">
+              <section class="mt-20" *ngIf="infraCreationProject">
                 <table class="table">
                   <thead>
                     <tr>
-                      <th>Task Name</th>
-                      <th>CreationDate/th>
-                      <th>Status</th>
-                      <th>Action</th>
+                      <th scope="col">Migration Name</th>
+                      <th scope="col">Requested Date</th>
+                      <th scope="col">Machine Name</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>d</td>
-                      <td>f</td>
-                      <td>f</td>
+                      <td>{{ infraCreationProject.migrationName }}</td>
+                      <td>{{ infraCreationProject.requestedDateTime }}</td>
+                      <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
+                      <td>{{ infraCreationProject.migrationStatus }}</td>
                       <td>
-                        <button mat-raised-button color="primary" class="pull-right">Start</button>
+                        <mat-icon aria-hidden="false" color="primary" aria-label="Start Change Event" title="Start Change Event"
+                          (click)="changeEventProject(infraCreationProject.id)">visibility</mat-icon>
                       </td>
                     </tr>
                   </tbody>
                 </table>
-                <!-- <div>
-                  <mat-label><strong>djjkdds</strong></mat-label>: <mat-label>10 pm</mat-label>
-                </div>
-                <div>
-                  <mat-label><strong>djjkdds</strong></mat-label>: <mat-label>Change Event</mat-label>
-                </div>
-                <div>
-                  <mat-label><strong>djjkdds</strong></mat-label>: <mat-label>435365</mat-label>
-                </div>
-                <div>
-                  <mat-label><strong>djjkdds</strong></mat-label>: <mat-label>Change Event</mat-label>
-                </div>
-                <button mat-raised-button color="primary" class="mt-20">Start</button>-->
               </section>
             </mat-tab>
           </mat-tab-group>

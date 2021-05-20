@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { HistoryComponent } from './history/history.component';
 import { PerformanceComponent } from './performance/performance.component';
 import { Shell } from './shell/shell.service';
 
@@ -12,7 +13,7 @@ const routes: Routes = [
     },
     { path: 'info', loadChildren: () => import('./info/info.module').then((info) => info.InfoModule) },
     { path: '', redirectTo: '/load-test', pathMatch: 'full' },
-    { path: '**', redirectTo: '/load-test' },
+    { path: 'history', component: HistoryComponent}
   ]),
 ];
 

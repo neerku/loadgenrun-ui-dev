@@ -28,11 +28,9 @@ export class PerformanceComponent implements OnInit {
   savedTemplate: any[] = [];
   selectedProfile: any = {};
   selectedTemplate: any = {};
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
-  onStepChange() {
-  }
+  onStepChange() {}
 
   addProfile() {
     this.profiles.push({
@@ -52,14 +50,10 @@ export class PerformanceComponent implements OnInit {
     this.profiles.splice(index, 1);
   }
 
-
   previewProfile() {
     const dialogRef = this.dialog.open(ProfilePreviewDialogComponent, {
       // width: '500px',
       data: { profiles: this.selectedProfile.profile },
     });
   }
-
-  
-  }
-
+}
