@@ -24,9 +24,9 @@ export class KeyholeService {
   }
 
   getProject(id: string) {
-    return this.http.get(this.apiUrl + '/project?id='+id);
+    return this.http.get(this.apiUrl + '/project/id='+id);
   }
-
+  
   getProjectList() {
     return this.http.get(this.apiUrl + '/project');
   }
