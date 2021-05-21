@@ -14,15 +14,13 @@
                     with minimal downtime. </p>
                   <p>Steps:</p>
                   <ol>
-                    <li>Provide the connection details for your existing (source) cluster</li>
-                    <li>Provide the Source details for your target cluster.</li>
-                    <li>Provide Infra details to backup your Source.</li>
+                    <li>Provide the connection details for your existing (cosmos) cluster.</li>
+                    <li>Provide the connection details for your target mongodb cluster.</li>
+                    <li>Provide virtual machine details to execute the migration.</li>
                     <li>Monitor your Backup , Restore , ChangeStream.</li>
                   </ol>
                   <p>View <a href="/">CosmosToMongo</a> documentation for any further details.</p><br/>
-                  <p>Provide name of this task and will copy the data from your source cluster to the destination
-                    cluster.<br />
-                    Once your data is copied, point your application to target cluster.</p>
+                  <p>Provide name for this task.</p>
                 </div>
                 <mat-form-field appearance="legacy">
                   <mat-label>Task Name</mat-label>
@@ -108,7 +106,7 @@
             </mat-tab>
             <mat-tab label="Virtual Machine Configuration" disabled="{{!isMongoConnectionValid}}">
               <section style="margin-top: 20px; margin-bottom: 10px">
-                <h6 class="sub-header">Service Priciple Details</h6>
+                <h6 class="sub-header">Service Principal Details</h6>
                 <mat-form-field appearance="legacy">
                   <mat-label>ClientId</mat-label>
                   <input matInput [(ngModel)]="Project.AzAccount.ClientId" placeholder="" required />
@@ -140,11 +138,11 @@
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>Location</mat-label>
-                  <input matInput [(ngModel)]="Project.VMConfiguration.Location" placeholder="" required />
+                  <input matInput [(ngModel)]="Project.VMConfiguration.Location" placeholder="Azure Vm Location" required />
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>Machine Name</mat-label>
-                  <input matInput [(ngModel)]="Project.VMConfiguration.MachineName" placeholder="" required />
+                  <input matInput [(ngModel)]="Project.VMConfiguration.MachineName" placeholder="Machine name. Avoid Spaces" required />
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>Size</mat-label>
@@ -185,7 +183,7 @@
         <table class="table">
           <thead>
             <tr>
-              <th scope="col">Migration Name</th>
+              <th scope="col">Task Name</th>
               <th scope="col">Requested Date</th>
               <th scope="col">Machine Name</th>
               <th scope="col">Status</th>
@@ -237,7 +235,7 @@
                 <table class="table">
                   <thead>
                     <tr>
-                      <th scope="col">Migration Name</th>
+                      <th scope="col">Task Name</th>
                       <th scope="col">Requested Date</th>
                       <th scope="col">Machine Name</th>
                       <th scope="col">Status</th>
@@ -266,7 +264,7 @@
                 <table class="table">
                   <thead>
                     <tr>
-                      <th scope="col">Migration Name</th>
+                      <th scope="col">Task Name</th>
                       <th scope="col">Requested Date</th>
                       <th scope="col">Machine Name</th>
                       <th scope="col">Status</th>
@@ -295,7 +293,7 @@
                 <table class="table">
                   <thead>
                     <tr>
-                      <th scope="col">Migration Name</th>
+                      <th scope="col">Task Name</th>
                       <th scope="col">Requested Date</th>
                       <th scope="col">Machine Name</th>
                       <th scope="col">Status</th>
