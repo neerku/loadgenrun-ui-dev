@@ -42,7 +42,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
     }
   }
 
-  constructor(private keyholeService: KeyholeService, private dialog: MatDialog) { }
+  constructor(private keyholeService: KeyholeService, private dialog: MatDialog) {}
   file: any;
   fileContent: string;
   templateToLoad: any;
@@ -55,8 +55,10 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   infraCreationProject: any = null;
   isCosmosConnectionValid: boolean = false;
   isMongoConnectionValid: boolean = false;
+  isConfigurationavailable: boolean = false;
   cosmosDbList: [];
   projectList: [];
+  locations: [];
   isBackupStarted: boolean = false;
   Project: Project = {
     MigrationName: '',
@@ -77,7 +79,8 @@ export class LoadtestComponent implements OnInit, OnDestroy {
       OsName: '',
       UserName: '',
       Password: '',
-      Size: 1024,
+      VMSize: '',
+      DiskSize: 1024,
     },
     AzAccount: {
       ClientId: '',
@@ -111,7 +114,8 @@ export class LoadtestComponent implements OnInit, OnDestroy {
         OsName: '',
         UserName: '',
         Password: '',
-        Size: 1024,
+        DiskSize: 1024,
+        VMSize: '',
       },
       AzAccount: {
         ClientId: '',
@@ -122,8 +126,10 @@ export class LoadtestComponent implements OnInit, OnDestroy {
     };
     this.isCosmosConnectionValid = false;
     this.isMongoConnectionValid = false;
+    this.isConfigurationavailable = false;
     this.cosmosDbList = [];
     this.isBackupStarted = false;
+    this.locations = [];
   }
 
   saveTemplate(templateData: any): void {
@@ -179,15 +185,25 @@ export class LoadtestComponent implements OnInit, OnDestroy {
       CosmosUser: this.Project.Configuration.CosmosUser,
       CosmosPassword: this.Project.Configuration.CosmosPassword,
     };
-    this.keyholeService.getDbList(cosmosDetails).subscribe((dbList: []) => {
-      this.cosmosDbList = dbList;
-      if (dbList.length > 0) {
-        this.isCosmosConnectionValid = true;
-        this.validationError = '';
+    this.keyholeService.getDbList(cosmosDetails).subscribe(
+      (dbList: []) => {
+        this.cosmosDbList = dbList;
+        if (dbList.length > 0) {
+          this.isCosmosConnectionValid = true;
+          this.validationError = '';
+        } else {
+          this.validationError = 'Invalid input.';
+        }
+      },
+      (error) => {
+        this.validationError = 'Invalid input.';
       }
-    }, error => { this.validationError = "Invalid input."; });
+    );
   }
-
+  getConfiguration() {
+    console.log(this.locations);
+    this.isConfigurationavailable = true;
+  }
   getProjectListInInterval() {
     setInterval(() => this.getProjectList(), 5000);
   }
@@ -204,10 +220,8 @@ export class LoadtestComponent implements OnInit, OnDestroy {
     };
     this.keyholeService.validateMongo(mongoDetails).subscribe((isValid: boolean) => {
       this.isMongoConnectionValid = isValid;
-      if (isValid)
-        this.validationError = '';
-      else
-        this.validationError = 'Invalid input.';
+      if (isValid) this.validationError = '';
+      else this.validationError = 'Invalid input.';
     });
   }
 
@@ -220,7 +234,6 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   onTabChanged(event: any): void {
     console.log(this);
     //let clickedIndex = event.index;
-
   }
   ngOnInit(): void {
     this.clearFields();
@@ -234,12 +247,10 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   }
   // validations
   goPreviousStep() {
-    if (this.tabIndex > 0)
-      this.tabIndex -= 1;
+    if (this.tabIndex > 0) this.tabIndex -= 1;
   }
   goNextStep() {
-    if (this.tabIndex <= 2 && this.tabIndex >= 0)
-      this.tabIndex += 1;
+    if (this.tabIndex <= 2 && this.tabIndex >= 0) this.tabIndex += 1;
   }
 }
 interface Project {
@@ -261,7 +272,8 @@ interface Project {
     OsName: string;
     UserName: string;
     Password: string;
-    Size: number;
+    DiskSize: number;
+    VMSize: string;
   };
   AzAccount: {
     ClientId: string;

@@ -10,8 +10,10 @@
               <section class="form-fields">
                 <h6 class="sub-header mt-20">Welcome to CosmosToMongo</h6>
                 <div class="instructions">
-                  <p>This tool allows you to migrate an existing MongoDB cluster hosted on AzureCosmos to MongoDB Atlas
-                    with minimal downtime. </p>
+                  <p>
+                    This tool allows you to migrate an existing MongoDB cluster hosted on AzureCosmos to MongoDB Atlas
+                    with minimal downtime.
+                  </p>
                   <p>Steps:</p>
                   <ol>
                     <li>Provide the connection details for your existing (cosmos) cluster.</li>
@@ -19,92 +21,167 @@
                     <li>Provide virtual machine details to execute the migration.</li>
                     <li>Monitor your Backup , Restore , ChangeStream.</li>
                   </ol>
-                  <p>View <a href="/">CosmosToMongo</a> documentation for any further details.</p><br/>
+                  <p>View <a href="/">CosmosToMongo</a> documentation for any further details.</p>
+                  <br />
                   <p>Provide name for this task.</p>
                 </div>
                 <mat-form-field appearance="legacy">
                   <mat-label>Task Name</mat-label>
                   <input matInput [(ngModel)]="Project.MigrationName" placeholder="Name your task" required />
                 </mat-form-field>
-                <div style="text-align: right;">
-                  <button mat-raised-button color="primary" (click)="goNextStep()" class="pull-right"
-                    disabled="{{Project.MigrationName == ''}}">Next</button>
+                <div style="text-align: right">
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="goNextStep()"
+                    class="pull-right"
+                    disabled="{{ Project.MigrationName == '' }}"
+                  >
+                    Next
+                  </button>
                 </div>
               </section>
             </mat-tab>
-            <mat-tab label="source details (cosmos)" disabled="{{Project.MigrationName == ''}}">
+            <mat-tab label="source details (cosmos)">
               <section class="form-fields">
                 <mat-form-field appearance="legacy">
                   <mat-label>Host URL</mat-label>
-                  <input matInput [(ngModel)]="Project.Configuration.CosmosHost" placeholder="sample.mongo.cosmos.azure.com:10255" required />
+                  <input
+                    matInput
+                    [(ngModel)]="Project.Configuration.CosmosHost"
+                    placeholder="sample.mongo.cosmos.azure.com:10255"
+                    required
+                  />
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>Authentication Database</mat-label>
-                  <input matInput [(ngModel)]="Project.Configuration.CosmosAuthenticationDatabase" placeholder="Authenticating database e.g. Admin"
-                    required />
+                  <input
+                    matInput
+                    [(ngModel)]="Project.Configuration.CosmosAuthenticationDatabase"
+                    placeholder="Authenticating database e.g. Admin"
+                    required
+                  />
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>User Name</mat-label>
-                  <input matInput [(ngModel)]="Project.Configuration.CosmosUser" placeholder="Database use name" required />
+                  <input
+                    matInput
+                    [(ngModel)]="Project.Configuration.CosmosUser"
+                    placeholder="Database use name"
+                    required
+                  />
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>Password</mat-label>
-                  <input matInput [(ngModel)]="Project.Configuration.CosmosPassword" placeholder="Password" type="password"
-                    required />
+                  <input
+                    matInput
+                    [(ngModel)]="Project.Configuration.CosmosPassword"
+                    placeholder="Password"
+                    type="password"
+                    required
+                  />
                 </mat-form-field>
               </section>
               <div style="margin: 20px; margin-left: 0">
-                <button mat-raised-button color="primary" (click)="getDatabaseList()"
-                  disabled="{{ Project.Configuration.CosmosHost == '' || Project.Configuration.CosmosAuthenticationDatabase == ''
-                  || Project.Configuration.CosmosUser == '' || Project.Configuration.CosmosPassword == ''}}">Validate</button>
-                <span *ngIf="isCosmosConnectionValid" class="validate-check">
-                  <mat-icon aria-hidden="false" aria-label="Example check_circle icon">check_circle</mat-icon>
+                <button
+                  mat-raised-button
+                  color="primary"
+                  (click)="getDatabaseList()"
+                  disabled="{{
+                    Project.Configuration.CosmosHost == '' ||
+                      Project.Configuration.CosmosAuthenticationDatabase == '' ||
+                      Project.Configuration.CosmosUser == '' ||
+                      Project.Configuration.CosmosPassword == ''
+                  }}"
+                >
+                  Validate
+                </button>
+                <span class="vaidation-message">
+                  <span *ngIf="isCosmosConnectionValid" class="text-success">Connection successful.</span>
+                  <span class="text-danger">{{ validationError }}</span>
                 </span>
-                <span>{{validationError}}</span>
               </div>
               <section class="form-fields" *ngIf="isCosmosConnectionValid">
-                <mat-form-field class="non-input">
-                  <mat-label>Dump All Databases</mat-label>
-                  <input matInput [hidden]="true" [(ngModel)]="Project.Configuration.DumpAll" name="DumpAll" required />
-                  <mat-checkbox class="ml-3" [(ngModel)]="Project.Configuration.DumpAll" on name="DumpAll" required>
-                  </mat-checkbox>
-                </mat-form-field>
-                <mat-form-field appearance="legacy" *ngIf="!Project.Configuration.DumpAll">
+                <span class="non-input" style="width: 45%; display: inline-block">
+                  <label>Dump All Databases</label><br />
+                  <mat-radio-group aria-label="Dump All Databases" [(ngModel)]="Project.Configuration.DumpAll">
+                    <mat-radio-button style="margin-right: 20px" value="true">Yes</mat-radio-button>
+                    <mat-radio-button value="false">No</mat-radio-button>
+                  </mat-radio-group>
+                </span>
+                <mat-form-field appearance="legacy">
                   <mat-label>Collections</mat-label>
-                  <mat-select [(ngModel)]="Project.Configuration.CosmosDatabases" multiple required>
+                  <mat-select
+                    [(ngModel)]="Project.Configuration.CosmosDatabases"
+                    multiple
+                    required
+                    [disabled]="Project.Configuration.DumpAll"
+                  >
                     <mat-option *ngFor="let db of cosmosDbList" [value]="db">{{ db }}</mat-option>
                   </mat-select>
                 </mat-form-field>
-                <div style="text-align: right;">
-                  <button mat-raised-button color="primary" (click)="goPreviousStep()"
-                    class="pull-right">Previous</button>
-                  <button mat-raised-button color="primary" (click)="goNextStep()" class="pull-right"
-                    disabled="{{!(isCosmosConnectionValid && (Project.Configuration.DumpAll || (Project.Configuration.CosmosDatabases.length > 0)))}}">Next</button>
+                <div style="text-align: right">
+                  <button mat-raised-button color="primary" (click)="goPreviousStep()" class="pull-right">
+                    Previous
+                  </button>
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="goNextStep()"
+                    class="pull-right"
+                    disabled="{{
+                      !(
+                        isCosmosConnectionValid &&
+                        (Project.Configuration.DumpAll || Project.Configuration.CosmosDatabases.length > 0)
+                      )
+                    }}"
+                  >
+                    Next
+                  </button>
                 </div>
               </section>
             </mat-tab>
-            <mat-tab label="target details (mongo)"
-              disabled="{{!(isCosmosConnectionValid && (Project.Configuration.DumpAll || (Project.Configuration.CosmosDatabases.length > 0)))}}">
+            <mat-tab label="target details (mongo)">
               <section style="margin-top: 20px; margin-bottom: 10px">
                 <mat-form-field appearance="legacy">
                   <mat-label>MongoDB Connection String</mat-label>
                   <input matInput [(ngModel)]="Project.Configuration.MongoUri" placeholder="" required />
                 </mat-form-field>
-                <span *ngIf="isMongoConnectionValid" class="validate-check">
-                  <mat-icon aria-hidden="false" aria-label="Example check_circle icon">check_circle</mat-icon>
+                <p>
+                  <small>e.g.</small>
+                  <code
+                    >mongodb://[username]:[password]@mongodb1.example.com:27017,mongodb2.example.com:27017,mongodb3.example.com:27017/myFirstDatabase?ssl=true&replicaSet=atlas-3odlmy-shard-0&authSource=[authenticatingdatabase]</code
+                  >
+                </p>
+                <button
+                  mat-raised-button
+                  color="primary"
+                  (click)="validateMongoDBConnection()"
+                  [disabled]="Project.Configuration.MongoUri == ''"
+                >
+                  Validate
+                </button>
+                <span class="vaidation-message">
+                  <span *ngIf="isMongoConnectionValid" class="text-success">Connection successful.</span>
+                  <span class="text-danger">{{ validationError }}</span>
                 </span>
-                <p><small>e.g.</small> <code>mongodb://[username]:[password]@mongodb1.example.com:27017,mongodb2.example.com:27017,mongodb3.example.com:27017/myFirstDatabase?ssl=true&replicaSet=atlas-3odlmy-shard-0&authSource=[authenticatingdatabase]</code></p>
-                <button mat-raised-button color="primary" (click)="validateMongoDBConnection()">Validate</button>
-                <span>{{validationError}}</span>
-                <div style="text-align: right;">
-                  <button mat-raised-button color="primary" (click)="goPreviousStep()"
-                    class="pull-right">Previous</button>
-                  <button mat-raised-button color="primary" (click)="goNextStep()" class="pull-right"
-                    disabled="{{!isMongoConnectionValid}}">Next</button>
+                <div style="text-align: right">
+                  <button mat-raised-button color="primary" (click)="goPreviousStep()" class="pull-right">
+                    Previous
+                  </button>
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="goNextStep()"
+                    class="pull-right"
+                    disabled="{{ !isMongoConnectionValid }}"
+                  >
+                    Next
+                  </button>
                 </div>
               </section>
             </mat-tab>
-            <mat-tab label="Virtual Machine Configuration" disabled="{{!isMongoConnectionValid}}">
+            <mat-tab label="Virtual Machine Configuration">
               <section style="margin-top: 20px; margin-bottom: 10px">
                 <h6 class="sub-header">Service Principal Details</h6>
                 <mat-form-field appearance="legacy">
@@ -123,9 +200,30 @@
                   <mat-label>SubscriptionId</mat-label>
                   <input matInput [(ngModel)]="Project.AzAccount.SubscriptionId" placeholder="" required />
                 </mat-form-field>
+                <div>
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="getConfiguration()"
+                    [disabled]="
+                      Project.AzAccount.ClientId == '' ||
+                      Project.AzAccount.ClientSecret == '' ||
+                      Project.AzAccount.TenantId == '' ||
+                      Project.AzAccount.SubscriptionId == ''
+                    "
+                  >
+                    Configure VM
+                  </button>
+                  <span class="vaidation-message">
+                    <span *ngIf="isMongoConnectionValid" class="text-success">Connection successful.</span>
+                    <span class="text-danger">{{ validationError }}</span>
+                  </span>
+                </div>
               </section>
-              <section style="margin-top: 20px; margin-bottom: 10px">
+
+              <section style="margin-top: 20px; margin-bottom: 10px" *ngIf="isConfigurationavailable">
                 <h6 class="sub-header">Virtual Machine</h6>
+                <p><small>instructions aksjksjd dhkhdskf f kjsdhfkj</small></p>
                 <div style="margin-top: 20px">
                   <mat-radio-group aria-label="Select an OS" [(ngModel)]="Project.VMConfiguration.OsName">
                     <mat-radio-button style="margin-right: 20px" value="Windows">Windows</mat-radio-button>
@@ -137,16 +235,27 @@
                   <input matInput [(ngModel)]="Project.VMConfiguration.ResourceGroupName" placeholder="" required />
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
-                  <mat-label>Location</mat-label>
-                  <input matInput [(ngModel)]="Project.VMConfiguration.Location" placeholder="Azure Vm Location" required />
+                  <mat-label>VM Size</mat-label>
+                  <input matInput [(ngModel)]="Project.VMConfiguration.VMSize" placeholder="" />
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>Machine Name</mat-label>
-                  <input matInput [(ngModel)]="Project.VMConfiguration.MachineName" placeholder="Machine name. Avoid Spaces" required />
+                  <input
+                    matInput
+                    [(ngModel)]="Project.VMConfiguration.MachineName"
+                    placeholder="Machine name. Avoid Spaces"
+                    required
+                  />
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
-                  <mat-label>Size</mat-label>
-                  <input matInput [(ngModel)]="Project.VMConfiguration.Size" placeholder="" type="number" />
+                  <mat-label>Location</mat-label>
+                  <mat-select [(ngModel)]="Project.VMConfiguration.Location" required>
+                    <mat-option *ngFor="let location of locations" [value]="location">{{ location }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="legacy">
+                  <mat-label>Disk Size(GB)</mat-label>
+                  <input matInput [(ngModel)]="Project.VMConfiguration.DiskSize" placeholder="" type="number" />
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>User Name</mat-label>
@@ -154,22 +263,45 @@
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>Password</mat-label>
-                  <input matInput [(ngModel)]="Project.VMConfiguration.Password" placeholder="" required
-                    type="password" />
+                  <input
+                    matInput
+                    [(ngModel)]="Project.VMConfiguration.Password"
+                    placeholder=""
+                    required
+                    type="password"
+                  />
                 </mat-form-field>
               </section>
-              <div style="text-align: right;">
-                <button mat-raised-button color="primary" (click)="goPreviousStep()"
-                  class="pull-right">Previous</button>
-                <button mat-raised-button color="primary" (click)="saveConfiguration(stepper)" class="pull-right"
-                  disabled="{{Project.AzAccount.ClientId == '' || Project.AzAccount.ClientSecret == '' || Project.AzAccount.TenantId == '' ||
-                Project.AzAccount.SubscriptionId == '' || Project.VMConfiguration.OsName == '' || Project.VMConfiguration.ResourceGroupName == '' ||
-                Project.VMConfiguration.Location == '' || Project.VMConfiguration.MachineName == '' || Project.VMConfiguration.Size == 0 ||
-                Project.VMConfiguration.UserName == '' || Project.VMConfiguration.Password == ''
-                }}">Start</button>
-                <mat-label class="mat-label" *ngIf="isBackupStarted">Infra creation started successfully.Visit <a
-                    routerLink="/first-component">History</a> tab for status
-                  updates.</mat-label>
+              <div style="text-align: right">
+                <button mat-raised-button color="primary" (click)="goPreviousStep()" class="pull-right">
+                  Previous
+                </button>
+                <button
+                  mat-raised-button
+                  color="primary"
+                  (click)="saveConfiguration(stepper)"
+                  class="pull-right"
+                  disabled="{{
+                    Project.AzAccount.ClientId == '' ||
+                      Project.AzAccount.ClientSecret == '' ||
+                      Project.AzAccount.TenantId == '' ||
+                      Project.AzAccount.SubscriptionId == '' ||
+                      Project.VMConfiguration.OsName == '' ||
+                      Project.VMConfiguration.ResourceGroupName == '' ||
+                      Project.VMConfiguration.Location == '' ||
+                      Project.VMConfiguration.MachineName == '' ||
+                      Project.VMConfiguration.VMSize == '' ||
+                      Project.VMConfiguration.DiskSize == 0 ||
+                      Project.VMConfiguration.UserName == '' ||
+                      Project.VMConfiguration.Password == ''
+                  }}"
+                >
+                  Start
+                </button>
+                <mat-label class="mat-label" *ngIf="isBackupStarted"
+                  >Infra creation started successfully.Visit <a routerLink="/first-component">History</a> tab for status
+                  updates.</mat-label
+                >
               </div>
             </mat-tab>
           </mat-tab-group>
@@ -197,16 +329,32 @@
               <td>{{ project.vmConfiguration.machineName }}</td>
               <td>{{ project.migrationStatus }}</td>
               <td>
-                <mat-icon aria-hidden="false" color="primary" aria-label="Edit" title="Edit"
-                  (click)="editProject(project.id)">edit
+                <mat-icon
+                  aria-hidden="false"
+                  color="primary"
+                  aria-label="Edit"
+                  title="Edit"
+                  (click)="editProject(project.id)"
+                  >edit
                 </mat-icon>
-                <mat-icon aria-hidden="false" color="primary" aria-label="Refresh" title="Refresh"
-                  (click)="refreshProject(project.id)">
+                <mat-icon
+                  aria-hidden="false"
+                  color="primary"
+                  aria-label="Refresh"
+                  title="Refresh"
+                  (click)="refreshProject(project.id)"
+                >
                   refresh
                 </mat-icon>
-                <mat-icon aria-hidden="false" color="accent" aria-label="Go to Migration" title="Go to Migration"
-                  (click)="gotoMigration(stepper,project)">
-                  launch</mat-icon>
+                <mat-icon
+                  aria-hidden="false"
+                  color="accent"
+                  aria-label="Go to Migration"
+                  title="Go to Migration"
+                  (click)="gotoMigration(stepper, project)"
+                >
+                  launch</mat-icon
+                >
               </td>
             </tr>
           </tbody>
@@ -249,10 +397,15 @@
                       <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
                       <td>{{ infraCreationProject.migrationStatus }}</td>
                       <td>
-                          <button mat-icon-button color="primary" aria-label="Start Backup" title="Start Backup"
-                          (click)="backupProject(infraCreationProject.id)">
-                            <mat-icon>backup</mat-icon> Start
-                          </button>
+                        <button
+                          mat-icon-button
+                          color="primary"
+                          aria-label="Start Backup"
+                          title="Start Backup"
+                          (click)="backupProject(infraCreationProject.id)"
+                        >
+                          <mat-icon>backup</mat-icon> Start
+                        </button>
                       </td>
                     </tr>
                   </tbody>
@@ -278,10 +431,15 @@
                       <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
                       <td>{{ infraCreationProject.migrationStatus }}</td>
                       <td>
-                          <button mat-icon-button color="primary" aria-label="Start Restore" title="Start Restore"
-                          (click)="restoreProject(infraCreationProject.id)">
-                            <mat-icon>restore</mat-icon> Start
-                          </button>
+                        <button
+                          mat-icon-button
+                          color="primary"
+                          aria-label="Start Restore"
+                          title="Start Restore"
+                          (click)="restoreProject(infraCreationProject.id)"
+                        >
+                          <mat-icon>restore</mat-icon> Start
+                        </button>
                       </td>
                     </tr>
                   </tbody>
@@ -307,7 +465,13 @@
                       <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
                       <td>{{ infraCreationProject.migrationStatus }}</td>
                       <td>
-                        <button mat-icon-button color="primary" aria-label="Start Change Event" title="Start Change Event" (click)="changeEventProject(infraCreationProject.id)">
+                        <button
+                          mat-icon-button
+                          color="primary"
+                          aria-label="Start Change Event"
+                          title="Start Change Event"
+                          (click)="changeEventProject(infraCreationProject.id)"
+                        >
                           <mat-icon>visibility</mat-icon> Start
                         </button>
                       </td>
