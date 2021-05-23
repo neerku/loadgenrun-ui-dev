@@ -180,6 +180,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
       console.log(result);
       this.infraCreationProject = result;
       this.isBackupStarted = true;
+      this.getProjectInInterval(result.id);
       stepper.next();
     });
   }
@@ -291,13 +292,19 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   getProjectListInInterval() {
     setInterval(() => this.getProjectList(), 5000);
   }
-
+  getProjectInInterval(id: any) {
+    setInterval(() => this.getProject(id), 12000);
+  }
   getProjectList(): void {
     this.keyholeService.getProjectList().subscribe((projects: []) => {
       this.projectList = projects;
     });
   }
-
+  getProject(id: any): void {
+    this.keyholeService.getProject(id).subscribe((project: any) => {
+      this.infraCreationProject = project;
+    });
+  }
   validateMongoDBConnection(): void {
     var mongoDetails = {
       Uri: this.Project.Configuration.MongoUri,
@@ -309,8 +316,38 @@ export class LoadtestComponent implements OnInit, OnDestroy {
     });
   }
 
-  onStepChange(): void {
-    console.log(this);
+  onStepChange(stepper: MatStepper, event: any): void {
+    console.log(stepper);
+    if (stepper.selectedIndex == 0 && this.infraCreationProject == null) {
+      setTimeout(function () {
+        stepper.selectedIndex = 0;
+      }, 50);
+      alert('Please configure infrastructure first.');
+    }
+    if (stepper.selectedIndex == 1 && event.selectedIndex == 0 && this.infraCreationProject != null) {
+      setTimeout(function () {
+        stepper.selectedIndex = 1;
+      }, 50);
+      alert('Please edit project to re-configure.');
+    }
+    if (
+      stepper.selectedIndex == 1 &&
+      event.selectedIndex == 2 &&
+      !this.infraCreationProject.vmConfiguration.isVirtualMachineCreated &&
+      this.infraCreationProject != null
+    ) {
+      setTimeout(function () {
+        stepper.selectedIndex = 1;
+      }, 50);
+      alert('Infrastructure creation is in progress. Please wait for status change.');
+    }
+    if (stepper.selectedIndex == 2) {
+      setTimeout(function () {
+        stepper.selectedIndex = 2;
+      }, 50);
+      alert('Migration is in progress.');
+    }
+
     //if(stepper.selectedIndex === stepper._steps.length-2 && this.infraCreationProject == null)
     //stepper.previous();
   }
@@ -321,8 +358,6 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     this.clearFields();
-    this.getProjectList();
-    this.getProjectListInInterval();
   }
   ngOnDestroy() {
     if (this.timer != null) {

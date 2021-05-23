@@ -1,5 +1,5 @@
 <div class="container-fluid mt-3" fxFlexAlign="stretch">
-  <mat-horizontal-stepper linear="false" (selectionChange)="onStepChange()" #stepper>
+  <mat-horizontal-stepper linear="false" (selectionChange)="onStepChange(stepper, $event)" #stepper>
     <mat-step>
       <ng-template matStepLabel>Configure</ng-template>
 
