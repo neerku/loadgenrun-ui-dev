@@ -35,8 +35,8 @@ export class KeyholeService {
     return this.http.post(this.apiUrl + '/utility/machine/locations', request);
   }
 
-  getVmSizes(request: any) {
-    return this.http.post(this.apiUrl + '/utility/machine/sizes', request);
+  getVmSizes(request: any,location:string) {
+    return this.http.post(this.apiUrl + '/utility/machine/'+ location +'/sizes', request);
   }
 
   validateCosmos(request: any) {
