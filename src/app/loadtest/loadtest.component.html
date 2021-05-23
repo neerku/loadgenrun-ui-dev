@@ -105,8 +105,8 @@
                 <span class="non-input" style="width: 45%; display: inline-block">
                   <label>Dump All Databases</label><br />
                   <mat-radio-group aria-label="Dump All Databases" [(ngModel)]="Project.Configuration.DumpAll">
-                    <mat-radio-button style="margin-right: 20px" value="true">Yes</mat-radio-button>
-                    <mat-radio-button value="false">No</mat-radio-button>
+                    <mat-radio-button style="margin-right: 20px" [value]="true">Yes</mat-radio-button>
+                    <mat-radio-button [value]="false">No</mat-radio-button>
                   </mat-radio-group>
                 </span>
                 <mat-form-field appearance="legacy">
@@ -204,7 +204,7 @@
                   <button
                     mat-raised-button
                     color="primary"
-                    (click)="getConfiguration()"
+                    (click)="getAzureLocations()"
                     [disabled]="
                       Project.AzAccount.ClientId == '' ||
                       Project.AzAccount.ClientSecret == '' ||
@@ -215,13 +215,12 @@
                     Configure VM
                   </button>
                   <span class="vaidation-message">
-                    <span *ngIf="isMongoConnectionValid" class="text-success">Connection successful.</span>
                     <span class="text-danger">{{ validationError }}</span>
                   </span>
                 </div>
               </section>
 
-              <section style="margin-top: 20px; margin-bottom: 10px" *ngIf="isConfigurationavailable">
+              <section style="margin-top: 20px; margin-bottom: 10px" *ngIf="vmLocations.length > 0">
                 <h6 class="sub-header">Virtual Machine</h6>
                 <p><small>instructions aksjksjd dhkhdskf f kjsdhfkj</small></p>
                 <div style="margin-top: 20px">
@@ -234,10 +233,7 @@
                   <mat-label>Resource Group Name</mat-label>
                   <input matInput [(ngModel)]="Project.VMConfiguration.ResourceGroupName" placeholder="" required />
                 </mat-form-field>
-                <mat-form-field appearance="legacy">
-                  <mat-label>VM Size</mat-label>
-                  <input matInput [(ngModel)]="Project.VMConfiguration.VMSize" placeholder="" />
-                </mat-form-field>
+
                 <mat-form-field appearance="legacy">
                   <mat-label>Machine Name</mat-label>
                   <input
@@ -249,13 +245,23 @@
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>Location</mat-label>
-                  <mat-select [(ngModel)]="Project.VMConfiguration.Location" required>
-                    <mat-option *ngFor="let location of locations" [value]="location">{{ location }}</mat-option>
+                  <mat-select
+                    [(ngModel)]="Project.VMConfiguration.Location"
+                    required
+                    (selectionChange)="changeLocation($event.value)"
+                  >
+                    <mat-option *ngFor="let location of vmLocations" [value]="location">{{ location }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="legacy">
+                  <mat-label>VM Size</mat-label>
+                  <mat-select [(ngModel)]="Project.VMConfiguration.VMSize" required>
+                    <mat-option *ngFor="let vmSize of vmSizes" [value]="vmSize.name">{{ vmSize.size }}</mat-option>
                   </mat-select>
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>Disk Size(GB)</mat-label>
-                  <input matInput [(ngModel)]="Project.VMConfiguration.DiskSize" placeholder="" type="number" />
+                  <input matInput [(ngModel)]="Project.VMConfiguration.OsDiskSize" placeholder="" type="number" />
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>User Name</mat-label>
@@ -291,7 +297,7 @@
                       Project.VMConfiguration.Location == '' ||
                       Project.VMConfiguration.MachineName == '' ||
                       Project.VMConfiguration.VMSize == '' ||
-                      Project.VMConfiguration.DiskSize == 0 ||
+                      Project.VMConfiguration.OsDiskSize == 0 ||
                       Project.VMConfiguration.UserName == '' ||
                       Project.VMConfiguration.Password == ''
                   }}"
@@ -310,8 +316,13 @@
     </mat-step>
     <mat-step>
       <ng-template matStepLabel>InfraCreation</ng-template>
-      <div class="mt-2">
-        <h6 class="sub-header" style="margin-bottom: 20px">Migration History</h6>
+      <div class="mt-2" *ngIf="infraCreationProject">
+        <p>Instruction regarding infra creation.</p>
+        <h6 style="margin-bottom: 20px; text-align: right">
+          <button mat-raised-button color="primary" (click)="startMigration(stepper, infraCreationProject)">
+            Start Migration
+          </button>
+        </h6>
         <table class="table">
           <thead>
             <tr>
@@ -323,18 +334,18 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let project of projectList">
-              <td>{{ project.migrationName }}</td>
-              <td>{{ project.requestedDateTime }}</td>
-              <td>{{ project.vmConfiguration.machineName }}</td>
-              <td>{{ project.migrationStatus }}</td>
+            <tr>
+              <td>{{ infraCreationProject.migrationName }}</td>
+              <td>{{ infraCreationProject.requestedDateTime }}</td>
+              <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
+              <td>{{ infraCreationProject.migrationStatus }}</td>
               <td>
                 <mat-icon
                   aria-hidden="false"
                   color="primary"
                   aria-label="Edit"
                   title="Edit"
-                  (click)="editProject(project.id)"
+                  (click)="editProject(infraCreationProject.id)"
                   >edit
                 </mat-icon>
                 <mat-icon
@@ -342,7 +353,7 @@
                   color="primary"
                   aria-label="Refresh"
                   title="Refresh"
-                  (click)="refreshProject(project.id)"
+                  (click)="refreshProject(infraCreationProject.id)"
                 >
                   refresh
                 </mat-icon>
@@ -351,7 +362,7 @@
                   color="accent"
                   aria-label="Go to Migration"
                   title="Go to Migration"
-                  (click)="gotoMigration(stepper, project)"
+                  (click)="startMigration(stepper, infraCreationProject)"
                 >
                   launch</mat-icon
                 >
@@ -380,6 +391,11 @@
           <mat-tab-group (selectedTabChange)="onTabChanged($event)">
             <mat-tab label="backup">
               <section class="mt-20" *ngIf="infraCreationProject">
+                <h6 style="margin-bottom: 20px; text-align: right">
+                  <button mat-raised-button color="primary" (click)="restoreProject(infraCreationProject)">
+                    Start Restore
+                  </button>
+                </h6>
                 <table class="table">
                   <thead>
                     <tr>
@@ -414,6 +430,11 @@
             </mat-tab>
             <mat-tab label="restore">
               <section class="mt-20" *ngIf="infraCreationProject">
+                <h6 style="margin-bottom: 20px; text-align: right">
+                  <button mat-raised-button color="primary" (click)="changeEventProject(infraCreationProject)">
+                    Start Change Event
+                  </button>
+                </h6>
                 <table class="table">
                   <thead>
                     <tr>
@@ -455,7 +476,6 @@
                       <th scope="col">Requested Date</th>
                       <th scope="col">Machine Name</th>
                       <th scope="col">Status</th>
-                      <th scope="col">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -464,17 +484,6 @@
                       <td>{{ infraCreationProject.requestedDateTime }}</td>
                       <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
                       <td>{{ infraCreationProject.migrationStatus }}</td>
-                      <td>
-                        <button
-                          mat-icon-button
-                          color="primary"
-                          aria-label="Start Change Event"
-                          title="Start Change Event"
-                          (click)="changeEventProject(infraCreationProject.id)"
-                        >
-                          <mat-icon>visibility</mat-icon> Start
-                        </button>
-                      </td>
                     </tr>
                   </tbody>
                 </table>

@@ -53,12 +53,45 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   timer: any;
   //Cosmos to Mongo Properties
   infraCreationProject: any = null;
+  /* {
+    id:"8ece72b6-7f68-40b7-802c-6ad059117a30",
+    AzAccount: {
+      ClientId: "8ece72b6-7f68-40b7-802c-6ad059117a30",
+      ClientSecret: "469o1_cAZd2_M-Zi7U442v0rPBGsTkI_c1",
+      SubscriptionId: "73eb6d29-402a-4726-b8be-2c3415b91f0a",
+      TenantId: "384f62c1-bce1-4bf2-8cc2-d262d500d522"
+    },
+    Configuration: {
+      CosmosAuthenticationDatabase: "test",
+      CosmosDatabases: [],
+      CosmosHost: "cosmosmongo-test.mongo.cosmos.azure.com:10255",
+      CosmosPassword: "XJLY4lZBs1UqEGqg6qBm2l4BY9ro48yzs1PPiPNeQMize1KvByHoelLiRbQM9wwh1Ou4WtBbGK7N0gDuf5BXWA==",
+      CosmosUser: "cosmosmongo-test",
+      DumpAll: true,
+      MongoUri: "mongodb://azureuser:6MFCRWYgO4aM7ezt@cluster0-shard-00-00.wdpzr.mongodb.net:27017,cluster0-shard-00-01.wdpzr.mongodb.net:27017,cluster0-shard-00-02.wdpzr.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-3odlmy-shard-0&authSource=admin",
+      StorageAccountName: "",
+      StorageAccountPrimaryKey: ""
+    },
+    MigrationName: "Task 1",
+    vmConfiguration: {
+      Location: "westus2",
+      MachineName: "MNQA",
+      OsDiskSize: 1024,
+      OsName: "Windows",
+      Password: "pass",
+      ResourceGroupName: "TRS2",
+      UserName: "Admin",
+      VMSize: "Standard_M416-208s_v2",
+      VmPublicIPAddress: ""
+    }
+  }; */
   isCosmosConnectionValid: boolean = false;
   isMongoConnectionValid: boolean = false;
   isConfigurationavailable: boolean = false;
   cosmosDbList: [];
   projectList: [];
-  locations: [];
+  vmLocations: [];
+  vmSizes: [];
   isBackupStarted: boolean = false;
   Project: Project = {
     MigrationName: '',
@@ -70,7 +103,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
       DumpAll: true,
       CosmosDatabases: [],
       StorageAccountName: '',
-      StorageAccountPrimaryKey:'',
+      StorageAccountPrimaryKey: '',
       MongoUri: '',
     },
     VMConfiguration: {
@@ -82,7 +115,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
       Password: '',
       VMSize: '',
       OsDiskSize: 1024,
-      VmPublicIPAddress:''
+      VmPublicIPAddress: '',
     },
     AzAccount: {
       ClientId: '',
@@ -107,7 +140,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
         DumpAll: true,
         CosmosDatabases: [],
         StorageAccountName: '',
-        StorageAccountPrimaryKey:'',
+        StorageAccountPrimaryKey: '',
         MongoUri: '',
       },
       VMConfiguration: {
@@ -119,7 +152,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
         Password: '',
         OsDiskSize: 1024,
         VMSize: '',
-        VmPublicIPAddress:''
+        VmPublicIPAddress: '',
       },
       AzAccount: {
         ClientId: '',
@@ -133,7 +166,8 @@ export class LoadtestComponent implements OnInit, OnDestroy {
     this.isConfigurationavailable = false;
     this.cosmosDbList = [];
     this.isBackupStarted = false;
-    this.locations = [];
+    this.vmLocations = [];
+    this.vmSizes = [];
   }
 
   saveTemplate(templateData: any): void {
@@ -144,12 +178,28 @@ export class LoadtestComponent implements OnInit, OnDestroy {
     this.keyholeService.saveProject(this.Project).subscribe((result: any) => {
       this.clearFields();
       console.log(result);
+      this.infraCreationProject = result;
       this.isBackupStarted = true;
       stepper.next();
     });
   }
-  gotoMigration(stepper: MatStepper, project: any) {
+  startMigration(stepper: MatStepper, project: any) {
     this.infraCreationProject = project;
+
+    this.keyholeService.startDumpProcess(project).subscribe(
+      (dbList: []) => {
+        this.cosmosDbList = dbList;
+        if (dbList.length > 0) {
+          this.isCosmosConnectionValid = true;
+          this.validationError = '';
+        } else {
+          this.validationError = 'Invalid input.';
+        }
+      },
+      (error) => {
+        this.validationError = 'Invalid input.';
+      }
+    );
     stepper.next();
   }
   editProject(projectId: any) {
@@ -204,9 +254,39 @@ export class LoadtestComponent implements OnInit, OnDestroy {
       }
     );
   }
-  getConfiguration() {
-    console.log(this.locations);
-    this.isConfigurationavailable = true;
+  getAzureLocations() {
+    console.log(this.vmLocations);
+
+    this.keyholeService.getVmLocations(this.Project.AzAccount).subscribe(
+      (locations: []) => {
+        this.vmLocations = locations;
+        if (locations.length > 0) {
+          this.validationError = '';
+        } else {
+          this.validationError = 'Invalid input/Check your access for service principal.';
+        }
+      },
+      (error) => {
+        this.validationError = 'Invalid input/Check your access for service principal.';
+      }
+    );
+  }
+  changeLocation(location: string) {
+    console.log(location);
+
+    this.keyholeService.getVmSizes(this.Project.AzAccount, location).subscribe(
+      (vmSizes: []) => {
+        this.vmSizes = vmSizes;
+        if (vmSizes.length > 0) {
+          this.validationError = '';
+        } else {
+          this.validationError = 'Invalid input/Check your access for service principal.';
+        }
+      },
+      (error) => {
+        this.validationError = 'Invalid input/Check your access for service principal.';
+      }
+    );
   }
   getProjectListInInterval() {
     setInterval(() => this.getProjectList(), 5000);
@@ -267,7 +347,7 @@ interface Project {
     DumpAll: boolean;
     CosmosDatabases: [];
     StorageAccountName: string;
-    StorageAccountPrimaryKey:string
+    StorageAccountPrimaryKey: string;
     MongoUri: string;
   };
   VMConfiguration: {
@@ -279,7 +359,7 @@ interface Project {
     Password: string;
     OsDiskSize: number;
     VMSize: string;
-    VmPublicIPAddress:string;
+    VmPublicIPAddress: string;
   };
   AzAccount: {
     ClientId: string;
