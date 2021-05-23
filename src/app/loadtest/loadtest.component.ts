@@ -70,6 +70,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
       DumpAll: true,
       CosmosDatabases: [],
       StorageAccountName: '',
+      StorageAccountPrimaryKey:'',
       MongoUri: '',
     },
     VMConfiguration: {
@@ -80,7 +81,8 @@ export class LoadtestComponent implements OnInit, OnDestroy {
       UserName: '',
       Password: '',
       VMSize: '',
-      DiskSize: 1024,
+      OsDiskSize: 1024,
+      VmPublicIPAddress:''
     },
     AzAccount: {
       ClientId: '',
@@ -105,6 +107,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
         DumpAll: true,
         CosmosDatabases: [],
         StorageAccountName: '',
+        StorageAccountPrimaryKey:'',
         MongoUri: '',
       },
       VMConfiguration: {
@@ -114,8 +117,9 @@ export class LoadtestComponent implements OnInit, OnDestroy {
         OsName: '',
         UserName: '',
         Password: '',
-        DiskSize: 1024,
+        OsDiskSize: 1024,
         VMSize: '',
+        VmPublicIPAddress:''
       },
       AzAccount: {
         ClientId: '',
@@ -263,6 +267,7 @@ interface Project {
     DumpAll: boolean;
     CosmosDatabases: [];
     StorageAccountName: string;
+    StorageAccountPrimaryKey:string
     MongoUri: string;
   };
   VMConfiguration: {
@@ -272,8 +277,9 @@ interface Project {
     OsName: string;
     UserName: string;
     Password: string;
-    DiskSize: number;
+    OsDiskSize: number;
     VMSize: string;
+    VmPublicIPAddress:string;
   };
   AzAccount: {
     ClientId: string;
