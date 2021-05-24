@@ -19,14 +19,17 @@ ul {
   list-style-type: none;
   margin-top: 4px;
 }
+
 .validate-check {
   position: relative;
   top: 8px;
   left: 20px;
 }
+
 .validate-check .mat-icon {
   color: green;
 }
+
 .mat-icon {
   cursor: pointer;
 }
@@ -38,6 +41,7 @@ ul {
 .instructions p {
   margin-bottom: 0px;
 }
+
 .vaidation-message {
   margin-left: 20px;
 }

@@ -42,7 +42,7 @@
                 </div>
               </section>
             </mat-tab>
-            <mat-tab label="source details (cosmos)">
+            <mat-tab label="source details (cosmos)" disabled="{{ Project.MigrationName == '' }}">
               <section class="form-fields">
                 <mat-form-field appearance="legacy">
                   <mat-label>Host URL</mat-label>
@@ -141,7 +141,15 @@
                 </div>
               </section>
             </mat-tab>
-            <mat-tab label="target details (mongo)">
+            <mat-tab
+              label="target details (mongo)"
+              disabled="{{
+                !(
+                  isCosmosConnectionValid &&
+                  (Project.Configuration.DumpAll || Project.Configuration.CosmosDatabases.length > 0)
+                )
+              }}"
+            >
               <section style="margin-top: 20px; margin-bottom: 10px">
                 <mat-form-field appearance="legacy">
                   <mat-label>MongoDB Connection String</mat-label>
@@ -181,7 +189,7 @@
                 </div>
               </section>
             </mat-tab>
-            <mat-tab label="Virtual Machine Configuration">
+            <mat-tab label="Virtual Machine Configuration" disabled="{{ !isMongoConnectionValid }}">
               <section style="margin-top: 20px; margin-bottom: 10px">
                 <h6 class="sub-header">Service Principal Details</h6>
                 <mat-form-field appearance="legacy">
@@ -304,10 +312,6 @@
                 >
                   Start
                 </button>
-                <mat-label class="mat-label" *ngIf="isBackupStarted"
-                  >Infra creation started successfully.Visit <a routerLink="/first-component">History</a> tab for status
-                  updates.</mat-label
-                >
               </div>
             </mat-tab>
           </mat-tab-group>
@@ -319,7 +323,12 @@
       <div class="mt-2" *ngIf="infraCreationProject">
         <p>Instruction regarding infra creation.</p>
         <h6 style="margin-bottom: 20px; text-align: right">
-          <button mat-raised-button color="primary" (click)="startMigration(stepper, infraCreationProject)">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="startMigration(stepper, infraCreationProject)"
+            [disabled]="!infraCreationProject.vmConfiguration.isVirtualMachineCreated"
+          >
             Start Migration
           </button>
         </h6>
@@ -357,15 +366,6 @@
                 >
                   refresh
                 </mat-icon>
-                <mat-icon
-                  aria-hidden="false"
-                  color="accent"
-                  aria-label="Go to Migration"
-                  title="Go to Migration"
-                  (click)="startMigration(stepper, infraCreationProject)"
-                >
-                  launch</mat-icon
-                >
               </td>
             </tr>
           </tbody>
@@ -392,7 +392,12 @@
             <mat-tab label="backup">
               <section class="mt-20" *ngIf="infraCreationProject">
                 <h6 style="margin-bottom: 20px; text-align: right">
-                  <button mat-raised-button color="primary" (click)="restoreProject(infraCreationProject)">
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="restoreProject(infraCreationProject)"
+                    [disabled]="!(infraCreationProject.jobStatus.backup.currentStatus == 'Completed')"
+                  >
                     Start Restore
                   </button>
                 </h6>
@@ -431,8 +436,13 @@
             <mat-tab label="restore">
               <section class="mt-20" *ngIf="infraCreationProject">
                 <h6 style="margin-bottom: 20px; text-align: right">
-                  <button mat-raised-button color="primary" (click)="changeEventProject(infraCreationProject)">
-                    Start Change Event
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="changeEventProject(infraCreationProject)"
+                    [disabled]="!(infraCreationProject.jobStatus.restore.currentStatus == 'Completed')"
+                  >
+                    Process Change Event
                   </button>
                 </h6>
                 <table class="table">
@@ -495,3 +505,4 @@
     </mat-step>
   </mat-horizontal-stepper>
 </div>
+<app-loader [isLoading]="showLoader"></app-loader>

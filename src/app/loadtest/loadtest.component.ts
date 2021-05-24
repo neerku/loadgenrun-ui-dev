@@ -128,6 +128,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   //validation properties
   tabIndex: number = 0;
   validationError: string = '';
+  showLoader: boolean = false;
 
   clearFields(): void {
     this.Project = {
@@ -175,17 +176,20 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   }
 
   saveConfiguration(stepper: MatStepper): void {
+    this.showLoader = true;
     this.keyholeService.saveProject(this.Project).subscribe((result: any) => {
       this.clearFields();
       console.log(result);
       this.infraCreationProject = result;
       this.isBackupStarted = true;
       this.getProjectInInterval(result.id);
+      this.showLoader = false;
       stepper.next();
     });
   }
   startMigration(stepper: MatStepper, project: any) {
     this.infraCreationProject = project;
+    this.showLoader = true;
 
     this.keyholeService.startDumpProcess(project).subscribe(
       (dbList: []) => {
@@ -196,8 +200,10 @@ export class LoadtestComponent implements OnInit, OnDestroy {
         } else {
           this.validationError = 'Invalid input.';
         }
+        this.showLoader = false;
       },
       (error) => {
+        this.showLoader = false;
         this.validationError = 'Invalid input.';
       }
     );
@@ -218,8 +224,10 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   changeEventProject(projectId: any) {
     console.log(projectId);
   }
+
   validateCosmosDetails(): void {
     console.log(this.Project);
+    this.showLoader = true;
     var cosmosDetails = {
       CosmosHost: this.Project.Configuration.CosmosHost,
       CosmosAuthenticationDatabase: this.Project.Configuration.CosmosAuthenticationDatabase,
@@ -229,11 +237,13 @@ export class LoadtestComponent implements OnInit, OnDestroy {
     this.keyholeService.validateCosmos(cosmosDetails).subscribe((isValid: boolean) => {
       this.isCosmosConnectionValid = isValid;
       if (isValid) this.getDatabaseList();
+      this.showLoader = false;
     });
   }
 
   getDatabaseList(): void {
     console.log(this.Project);
+    this.showLoader = true;
     var cosmosDetails = {
       CosmosHost: this.Project.Configuration.CosmosHost,
       CosmosAuthenticationDatabase: this.Project.Configuration.CosmosAuthenticationDatabase,
@@ -249,15 +259,18 @@ export class LoadtestComponent implements OnInit, OnDestroy {
         } else {
           this.validationError = 'Invalid input.';
         }
+        this.showLoader = false;
       },
       (error) => {
         this.validationError = 'Invalid input.';
+        this.showLoader = false;
       }
     );
   }
+
   getAzureLocations() {
     console.log(this.vmLocations);
-
+    this.showLoader = true;
     this.keyholeService.getVmLocations(this.Project.AzAccount).subscribe(
       (locations: []) => {
         this.vmLocations = locations;
@@ -266,15 +279,18 @@ export class LoadtestComponent implements OnInit, OnDestroy {
         } else {
           this.validationError = 'Invalid input/Check your access for service principal.';
         }
+        this.showLoader = false;
       },
       (error) => {
         this.validationError = 'Invalid input/Check your access for service principal.';
+        this.showLoader = false;
       }
     );
   }
+
   changeLocation(location: string) {
     console.log(location);
-
+    this.showLoader = true;
     this.keyholeService.getVmSizes(this.Project.AzAccount, location).subscribe(
       (vmSizes: []) => {
         this.vmSizes = vmSizes;
@@ -283,29 +299,37 @@ export class LoadtestComponent implements OnInit, OnDestroy {
         } else {
           this.validationError = 'Invalid input/Check your access for service principal.';
         }
+        this.showLoader = false;
       },
       (error) => {
         this.validationError = 'Invalid input/Check your access for service principal.';
+        this.showLoader = false;
       }
     );
   }
+
   getProjectListInInterval() {
     setInterval(() => this.getProjectList(), 5000);
   }
+
   getProjectInInterval(id: any) {
-    setInterval(() => this.getProject(id), 12000);
+    setInterval(() => this.getProject(id), 120000);
   }
+
   getProjectList(): void {
     this.keyholeService.getProjectList().subscribe((projects: []) => {
       this.projectList = projects;
     });
   }
+
   getProject(id: any): void {
     this.keyholeService.getProject(id).subscribe((project: any) => {
       this.infraCreationProject = project;
     });
   }
+
   validateMongoDBConnection(): void {
+    this.showLoader = true;
     var mongoDetails = {
       Uri: this.Project.Configuration.MongoUri,
     };
@@ -313,40 +337,41 @@ export class LoadtestComponent implements OnInit, OnDestroy {
       this.isMongoConnectionValid = isValid;
       if (isValid) this.validationError = '';
       else this.validationError = 'Invalid input.';
+      this.showLoader = false;
     });
   }
 
   onStepChange(stepper: MatStepper, event: any): void {
     console.log(stepper);
-    if (stepper.selectedIndex == 0 && this.infraCreationProject == null) {
-      setTimeout(function () {
-        stepper.selectedIndex = 0;
-      }, 50);
-      alert('Please configure infrastructure first.');
-    }
-    if (stepper.selectedIndex == 1 && event.selectedIndex == 0 && this.infraCreationProject != null) {
-      setTimeout(function () {
-        stepper.selectedIndex = 1;
-      }, 50);
-      alert('Please edit project to re-configure.');
-    }
-    if (
-      stepper.selectedIndex == 1 &&
-      event.selectedIndex == 2 &&
-      !this.infraCreationProject.vmConfiguration.isVirtualMachineCreated &&
-      this.infraCreationProject != null
-    ) {
-      setTimeout(function () {
-        stepper.selectedIndex = 1;
-      }, 50);
-      alert('Infrastructure creation is in progress. Please wait for status change.');
-    }
-    if (stepper.selectedIndex == 2) {
-      setTimeout(function () {
-        stepper.selectedIndex = 2;
-      }, 50);
-      alert('Migration is in progress.');
-    }
+    /*  if (stepper.selectedIndex == 0 && this.infraCreationProject == null) {
+        setTimeout(function () {
+          stepper.selectedIndex = 0;
+        }, 50);
+        alert('Please configure infrastructure first.');
+      }
+      if (stepper.selectedIndex == 1 && event.selectedIndex == 0 && this.infraCreationProject != null) {
+        setTimeout(function () {
+          stepper.selectedIndex = 1;
+        }, 50);
+        alert('Please edit project to re-configure.');
+      }
+      if (
+        stepper.selectedIndex == 1 &&
+        event.selectedIndex == 2 &&
+        !this.infraCreationProject.vmConfiguration.isVirtualMachineCreated &&
+        this.infraCreationProject != null
+      ) {
+        setTimeout(function () {
+          stepper.selectedIndex = 1;
+        }, 50);
+        alert('Infrastructure creation is in progress. Please wait for status change.');
+      }
+      if (stepper.selectedIndex == 2) {
+        setTimeout(function () {
+          stepper.selectedIndex = 2;
+        }, 50);
+        alert('Migration is in progress.');
+      }*/
 
     //if(stepper.selectedIndex === stepper._steps.length-2 && this.infraCreationProject == null)
     //stepper.previous();
@@ -356,9 +381,11 @@ export class LoadtestComponent implements OnInit, OnDestroy {
     console.log(this);
     //let clickedIndex = event.index;
   }
+
   ngOnInit(): void {
     this.clearFields();
   }
+
   ngOnDestroy() {
     if (this.timer != null) {
       clearInterval(this.timer);

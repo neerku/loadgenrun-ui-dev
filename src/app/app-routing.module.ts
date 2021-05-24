@@ -13,7 +13,7 @@ const routes: Routes = [
     },
     { path: 'info', loadChildren: () => import('./info/info.module').then((info) => info.InfoModule) },
     { path: '', redirectTo: '/load-test', pathMatch: 'full' },
-    { path: 'history', component: HistoryComponent}
+    { path: 'history', component: HistoryComponent },
   ]),
 ];
 
