@@ -14,7 +14,7 @@ import { SaveTemplateDialogComponent } from '@app/save-template-dialog/save-temp
 import { GenerateDataDialogComponent } from '@app/generate-data-dialog/generate-data-dialog.component';
 import { MatIconModule } from '@angular/material/icon';
 import { TemplatePreviewDialogComponent } from '@app/template-preview-dialog/template-preview-dialog.component';
-
+import { SharedModule } from '@shared';
 @NgModule({
   imports: [
     CommonModule,
@@ -27,6 +27,7 @@ import { TemplatePreviewDialogComponent } from '@app/template-preview-dialog/tem
     NgJsonEditorModule,
     MatDialogModule,
     MatIconModule,
+    SharedModule,
   ],
   declarations: [
     LoadtestComponent,

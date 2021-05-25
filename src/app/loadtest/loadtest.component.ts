@@ -6,6 +6,8 @@ import { JsonTypePickerDialogComponent } from '@app/json-type-picker-dialog/json
 import { SaveTemplateDialogComponent } from '@app/save-template-dialog/save-template-dialog.component';
 import { TemplatePreviewDialogComponent } from '@app/template-preview-dialog/template-preview-dialog.component';
 import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
+import { interval, Subscription } from 'rxjs';
+import { MatStepper } from '@angular/material/stepper';
 //import { SignKeyObjectInput } from 'crypto';
 
 @Component({
@@ -40,11 +42,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
     }
   }
 
-  constructor(private keyholeService: KeyholeService, private dialog: MatDialog) {
-
-
-
-  }
+  constructor(private keyholeService: KeyholeService, private dialog: MatDialog) {}
   file: any;
   fileContent: string;
   templateToLoad: any;
@@ -52,12 +50,18 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   uuid: string;
   infoResponse: any;
   showDBDetails: boolean;
+  timer: any;
+  //Cosmos to Mongo Properties
+  infraCreationProject: any = null;
+  projectInterval:any;
   isCosmosConnectionValid: boolean = false;
   isMongoConnectionValid: boolean = false;
+  isConfigurationavailable: boolean = false;
   cosmosDbList: [];
-  projectList:[];
+  projectList: [];
+  vmLocations: [];
+  vmSizes: [];
   isBackupStarted: boolean = false;
-
   Project: Project = {
     MigrationName: '',
     Configuration: {
@@ -66,40 +70,9 @@ export class LoadtestComponent implements OnInit, OnDestroy {
       CosmosUser: '',
       CosmosPassword: '',
       DumpAll: true,
-      CosmosDatabases: '',
+      CosmosDatabases: [],
       StorageAccountName: '',
-      MongoUri: '',
-    },
-    VMConfiguration: {
-      ResourceGroupName: '',
-      Location: '',
-      MachineName: '',      
-      OsName:'',
-      UserName: '',
-      Password: '',
-      Size: 1024,
-    },
-    AzAccount: {
-      ClientId: '',
-      ClientSecret: '',
-      TenantId: '',
-      SubscriptionId: '',
-    }
-  };
-
-  timer: any;
-
-clearFields(): void {
-  this.Project = {
-    MigrationName: '',
-    Configuration: {
-      CosmosHost: '',
-      CosmosAuthenticationDatabase: '',
-      CosmosUser: '',
-      CosmosPassword: '',
-      DumpAll: true,
-      CosmosDatabases: '',
-      StorageAccountName: '',
+      StorageAccountPrimaryKey: '',
       MongoUri: '',
     },
     VMConfiguration: {
@@ -109,107 +82,313 @@ clearFields(): void {
       OsName: '',
       UserName: '',
       Password: '',
-      Size: 1024,
+      VMSize: '',
+      OsDiskSize: 1024,
+      VmPublicIPAddress: '',
     },
     AzAccount: {
       ClientId: '',
       ClientSecret: '',
       TenantId: '',
       SubscriptionId: '',
-    }
-  }
-  this.isCosmosConnectionValid = false
-  this.isMongoConnectionValid= false;
-  this.cosmosDbList= [];
-  this.isBackupStarted = false;
+    },
+  };
 
-}
+  //validation properties
+  tabIndex: number = 0;
+  validationError: string = '';
+  showLoader: boolean = false;
+
+  clearFields(): void {
+    this.Project = {
+      MigrationName: '',
+      Configuration: {
+        CosmosHost: '',
+        CosmosAuthenticationDatabase: '',
+        CosmosUser: '',
+        CosmosPassword: '',
+        DumpAll: true,
+        CosmosDatabases: [],
+        StorageAccountName: '',
+        StorageAccountPrimaryKey: '',
+        MongoUri: '',
+      },
+      VMConfiguration: {
+        ResourceGroupName: '',
+        Location: '',
+        MachineName: '',
+        OsName: '',
+        UserName: '',
+        Password: '',
+        OsDiskSize: 1024,
+        VMSize: '',
+        VmPublicIPAddress: '',
+      },
+      AzAccount: {
+        ClientId: '',
+        ClientSecret: '',
+        TenantId: '',
+        SubscriptionId: '',
+      },
+    };
+    this.isCosmosConnectionValid = false;
+    this.isMongoConnectionValid = false;
+    this.isConfigurationavailable = false;
+    this.cosmosDbList = [];
+    this.isBackupStarted = false;
+    this.vmLocations = [];
+    this.vmSizes = [];
+  }
 
   saveTemplate(templateData: any): void {
     console.log(templateData);
-
   }
 
-  startBackup(): void {
+  saveConfiguration(stepper: MatStepper): void {
+    this.showLoader = true;
     this.keyholeService.saveProject(this.Project).subscribe((result: any) => {
       this.clearFields();
       console.log(result);
+      this.infraCreationProject = result;
       this.isBackupStarted = true;
+      this.getProjectInInterval(result.id);
+      this.showLoader = false;
+      stepper.next();
     });
+  }
 
+  startDumping(stepper: MatStepper, project: any) {
+    this.showLoader = true;
+
+    this.keyholeService.startDumpProcess(project.id).subscribe((result: any) => {
+      this.getProject(project.id);
+      this.showLoader = false;
+      },
+      (error) => {
+        this.showLoader = false;
+      }
+    );
+    stepper.next();
+  }
+
+  startRestore(project: any) {
+    this.showLoader = true;
+    this.keyholeService.startRestoreProcess(project.id).subscribe((result: any) => {
+      this.getProject(project.id);
+      this.showLoader = false;
+      },
+      (error) => {
+        this.showLoader = false;
+      }
+    );
+  }
+
+  startProcessingChangeEvents(project: any) {
+    this.showLoader = true;
+    this.keyholeService.processChangeStream(project.id).subscribe((result: any) => {
+      this.getProject(project.id);
+      this.showLoader = false;
+      },
+      (error) => {
+        this.showLoader = false;
+      }
+    );
+  }
+
+  editProject(projectId: any) {
+    console.log(projectId);
+  }
+  refreshProject(projectId: any) {
+    console.log(projectId);
   }
 
   validateCosmosDetails(): void {
     console.log(this.Project);
+    this.showLoader = true;
     var cosmosDetails = {
       CosmosHost: this.Project.Configuration.CosmosHost,
       CosmosAuthenticationDatabase: this.Project.Configuration.CosmosAuthenticationDatabase,
       CosmosUser: this.Project.Configuration.CosmosUser,
-      CosmosPassword: this.Project.Configuration.CosmosPassword
-    }
+      CosmosPassword: this.Project.Configuration.CosmosPassword,
+    };
     this.keyholeService.validateCosmos(cosmosDetails).subscribe((isValid: boolean) => {
       this.isCosmosConnectionValid = isValid;
-      if (isValid)
-        this.getDatabaseList();
+      if (isValid) this.getDatabaseList();
+      this.showLoader = false;
     });
   }
 
   getDatabaseList(): void {
     console.log(this.Project);
+    this.showLoader = true;
     var cosmosDetails = {
       CosmosHost: this.Project.Configuration.CosmosHost,
       CosmosAuthenticationDatabase: this.Project.Configuration.CosmosAuthenticationDatabase,
       CosmosUser: this.Project.Configuration.CosmosUser,
-      CosmosPassword: this.Project.Configuration.CosmosPassword
-    }
-    this.keyholeService.getDbList(cosmosDetails).subscribe((dbList: []) => {
-      this.cosmosDbList = dbList;
-      if (dbList.length > 0)
-        this.isCosmosConnectionValid = true;
+      CosmosPassword: this.Project.Configuration.CosmosPassword,
+    };
+    this.keyholeService.getDbList(cosmosDetails).subscribe(
+      (dbList: []) => {
+        this.cosmosDbList = dbList;
+        if (dbList.length > 0) {
+          this.isCosmosConnectionValid = true;
+          this.validationError = '';
+        } else {
+          this.validationError = 'Invalid input.';
+        }
+        this.showLoader = false;
+      },
+      (error) => {
+        this.validationError = 'Invalid input.';
+        this.showLoader = false;
+      }
+    );
+  }
+
+  getAzureLocations() {
+    console.log(this.vmLocations);
+    this.showLoader = true;
+    this.keyholeService.getVmLocations(this.Project.AzAccount).subscribe(
+      (locations: []) => {
+        this.vmLocations = locations;
+        if (locations.length > 0) {
+          this.validationError = '';
+        } else {
+          this.validationError = 'Invalid input/Check your access for service principal.';
+        }
+        this.showLoader = false;
+      },
+      (error) => {
+        this.validationError = 'Invalid input/Check your access for service principal.';
+        this.showLoader = false;
+      }
+    );
+  }
+
+  changeLocation(location: string) {
+    console.log(location);
+    this.showLoader = true;
+    this.keyholeService.getVmSizes(this.Project.AzAccount, location).subscribe(
+      (vmSizes: []) => {
+        this.vmSizes = vmSizes;
+        if (vmSizes.length > 0) {
+          this.validationError = '';
+        } else {
+          this.validationError = 'Invalid input/Check your access for service principal.';
+        }
+        this.showLoader = false;
+      },
+      (error) => {
+        this.validationError = 'Invalid input/Check your access for service principal.';
+        this.showLoader = false;
+      }
+    );
+  }
+
+  getProjectListInInterval() {
+    setInterval(() => this.getProjectList(), 5000);
+  }
+
+  getProjectInInterval(id: any) {
+    this.projectInterval= setInterval(() => this.getProject(id), 120000);
+  }
+
+  getProjectList(): void {
+    this.keyholeService.getProjectList().subscribe((projects: []) => {
+      this.projectList = projects;
+    });
+  }
+
+  getProject(id: any): void {
+    this.keyholeService.getProject(id).subscribe((project: any) => {
+      this.infraCreationProject = project;
     });
   }
 
   validateMongoDBConnection(): void {
+    this.showLoader = true;
     var mongoDetails = {
-
-      Uri: this.Project.Configuration.MongoUri
-    }
+      Uri: this.Project.Configuration.MongoUri,
+    };
     this.keyholeService.validateMongo(mongoDetails).subscribe((isValid: boolean) => {
       this.isMongoConnectionValid = isValid;
-    })
+      if (isValid) this.validationError = '';
+      else this.validationError = 'Invalid input.';
+      this.showLoader = false;
+    });
   }
 
-  onStepChange(): void {
+  onStepChange(stepper: MatStepper, event: any): void {
+    console.log(stepper);
+    /*  if (stepper.selectedIndex == 0 && this.infraCreationProject == null) {
+        setTimeout(function () {
+          stepper.selectedIndex = 0;
+        }, 50);
+        alert('Please configure infrastructure first.');
+      }
+      if (stepper.selectedIndex == 1 && event.selectedIndex == 0 && this.infraCreationProject != null) {
+        setTimeout(function () {
+          stepper.selectedIndex = 1;
+        }, 50);
+        alert('Please edit project to re-configure.');
+      }
+      if (
+        stepper.selectedIndex == 1 &&
+        event.selectedIndex == 2 &&
+        !this.infraCreationProject.vmConfiguration.isVirtualMachineCreated &&
+        this.infraCreationProject != null
+      ) {
+        setTimeout(function () {
+          stepper.selectedIndex = 1;
+        }, 50);
+        alert('Infrastructure creation is in progress. Please wait for status change.');
+      }
+      if (stepper.selectedIndex == 2) {
+        setTimeout(function () {
+          stepper.selectedIndex = 2;
+        }, 50);
+        alert('Migration is in progress.');
+      }*/
 
+    //if(stepper.selectedIndex === stepper._steps.length-2 && this.infraCreationProject == null)
+    //stepper.previous();
   }
 
-  onTabChanged(): void {
-
+  onTabChanged(event: any): void {
+    console.log(this);
+    //let clickedIndex = event.index;
   }
+
   ngOnInit(): void {
     this.clearFields();
-    this.keyholeService.getProjectList().subscribe((projects:[]) => {
-      this.projectList = projects;
-    })
   }
+
   ngOnDestroy() {
     if (this.timer != null) {
       clearInterval(this.timer);
     }
   }
+  // validations
+  goPreviousStep() {
+    if (this.tabIndex > 0) this.tabIndex -= 1;
+  }
+  goNextStep() {
+    if (this.tabIndex <= 2 && this.tabIndex >= 0) this.tabIndex += 1;
+  }
 }
 interface Project {
-  MigrationName: string;  
+  MigrationName: string;
   Configuration: {
     CosmosHost: string;
     CosmosAuthenticationDatabase: string;
     CosmosUser: string;
     CosmosPassword: string;
     DumpAll: boolean;
-    CosmosDatabases: string;
+    CosmosDatabases: [];
     StorageAccountName: string;
+    StorageAccountPrimaryKey: string;
     MongoUri: string;
-  }
+  };
   VMConfiguration: {
     ResourceGroupName: string;
     Location: string;
@@ -217,14 +396,14 @@ interface Project {
     OsName: string;
     UserName: string;
     Password: string;
-    Size: number;
-  }
+    OsDiskSize: number;
+    VMSize: string;
+    VmPublicIPAddress: string;
+  };
   AzAccount: {
     ClientId: string;
     ClientSecret: string;
     TenantId: string;
     SubscriptionId: string;
-  }
+  };
 }
-
-

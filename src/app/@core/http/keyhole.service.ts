@@ -24,13 +24,21 @@ export class KeyholeService {
   }
 
   getProject(id: string) {
-    return this.http.get(this.apiUrl + '/project?id='+id);
+    return this.http.get(this.apiUrl + '/project/' + id);
   }
 
   getProjectList() {
     return this.http.get(this.apiUrl + '/project');
   }
- 
+
+  getVmLocations(request: any) {
+    return this.http.post(this.apiUrl + '/utility/machine/locations', request);
+  }
+
+  getVmSizes(request: any, location: string) {
+    return this.http.post(this.apiUrl + '/utility/machine/' + location + '/sizes', request);
+  }
+
   validateCosmos(request: any) {
     return this.http.post(this.apiUrl + '/utility/validate/cosmos', request);
   }
@@ -39,7 +47,15 @@ export class KeyholeService {
     return this.http.post(this.apiUrl + '/utility/validate/mongo', request);
   }
 
-  
+  startDumpProcess(id: string) {
+    return this.http.post(this.apiUrl + '/project/' + id + '/dump', '');
+  }
 
-  
+  startRestoreProcess(id: string) {
+    return this.http.post(this.apiUrl + '/project/' + id + '/restore', '');
+  }
+
+  processChangeStream(id: string) {
+    return this.http.post(this.apiUrl + '/project/' + id + '/events', '');
+  }
 }
