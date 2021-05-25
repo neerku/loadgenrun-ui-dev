@@ -1,0 +1,24 @@
+<h1 mat-dialog-title>{{ data.name }}</h1>
+<div mat-dialog-content>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Task Name</th>
+        <th scope="col">Requested Date</th>
+        <th scope="col">Machine Name</th>
+        <th scope="col">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ data.details.migrationName }}</td>
+        <td>{{ data.details.requestedDateTime }}</td>
+        <td>{{ data.details.vmConfiguration.machineName }}</td>
+        <td>{{ data.details.projectStatus }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div mat-dialog-actions>
+  <button mat-button color="primary" (click)="onNoClick()">Ok</button>
+</div>

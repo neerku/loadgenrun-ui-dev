@@ -1,5 +1,5 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { KeyholeService } from '@app/@core/http/keyhole.service';
 import { GenerateDataDialogComponent } from '@app/generate-data-dialog/generate-data-dialog.component';
 import { JsonTypePickerDialogComponent } from '@app/json-type-picker-dialog/json-type-picker-dialog.component';
@@ -9,6 +9,7 @@ import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
 import { interval, Subscription } from 'rxjs';
 import { MatStepper } from '@angular/material/stepper';
 import { ActivatedRoute } from '@angular/router';
+import { DetailsOverviewDialogComponent } from './details-overview-dialog/details-overview-dialog.component';
 //import { SignKeyObjectInput } from 'crypto';
 
 @Component({
@@ -202,7 +203,17 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   refreshProject(projectId: any) {
     console.log(projectId);
   }
+  openDialog(projectId: any) {
+    console.log(projectId);
+    const dialogRef = this.dialog.open(DetailsOverviewDialogComponent, {
+      width: '550px',
+      data: { name: 'Project Details', details: this.infraCreationProject },
+    });
 
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('The dialog was closed', result);
+    });
+  }
   validateCosmosDetails(): void {
     console.log(this.Project);
     this.showLoader = true;
