@@ -53,6 +53,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   showDBDetails: boolean;
   timer: any;
   //Cosmos to Mongo Properties
+  projectInterval: any;
   infraCreationProject: any = null;
   isCosmosConnectionValid: boolean = false;
   isMongoConnectionValid: boolean = false;
@@ -157,41 +158,48 @@ export class LoadtestComponent implements OnInit, OnDestroy {
       stepper.next();
     });
   }
-  startMigration(stepper: MatStepper, project: any) {
-    this.infraCreationProject = project;
+  startDumping(stepper: MatStepper, project: any) {
     this.showLoader = true;
 
-    this.keyholeService.startDumpProcess(project).subscribe(
-      (dbList: []) => {
-        this.cosmosDbList = dbList;
-        if (dbList.length > 0) {
-          this.isCosmosConnectionValid = true;
-          this.validationError = '';
-        } else {
-          this.validationError = 'Invalid input.';
-        }
+    this.keyholeService.startDumpProcess(project.id).subscribe(
+      (result: any) => {
+        this.getProject(project.id);
         this.showLoader = false;
       },
       (error) => {
         this.showLoader = false;
-        this.validationError = 'Invalid input.';
       }
     );
     stepper.next();
+  }
+  startRestore(project: any) {
+    this.showLoader = true;
+    this.keyholeService.startRestoreProcess(project.id).subscribe(
+      (result: any) => {
+        this.getProject(project.id);
+        this.showLoader = false;
+      },
+      (error) => {
+        this.showLoader = false;
+      }
+    );
+  }
+  startProcessingChangeEvents(project: any) {
+    this.showLoader = true;
+    this.keyholeService.processChangeStream(project.id).subscribe(
+      (result: any) => {
+        this.getProject(project.id);
+        this.showLoader = false;
+      },
+      (error) => {
+        this.showLoader = false;
+      }
+    );
   }
   editProject(projectId: any) {
     console.log(projectId);
   }
   refreshProject(projectId: any) {
-    console.log(projectId);
-  }
-  backupProject(projectId: any) {
-    console.log(projectId);
-  }
-  restoreProject(projectId: any) {
-    console.log(projectId);
-  }
-  changeEventProject(projectId: any) {
     console.log(projectId);
   }
 
@@ -283,7 +291,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   }
 
   getProjectInInterval(id: any) {
-    setInterval(() => this.getProject(id), 120000);
+    this.projectInterval = setInterval(() => this.getProject(id), 120000);
   }
 
   getProjectList(): void {

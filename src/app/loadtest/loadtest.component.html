@@ -192,6 +192,13 @@
             <mat-tab label="Virtual Machine Configuration" disabled="{{ !isMongoConnectionValid }}">
               <section style="margin-top: 20px; margin-bottom: 10px">
                 <h6 class="sub-header">Service Principal Details</h6>
+                <p>
+                  <small
+                    >Please provide Service Principal details to create new virtual machine. This machine will host the
+                    execution of the dump ,restore and changestream. In addition to it it will also create storage
+                    acoount to save the
+                  </small>
+                </p>
                 <mat-form-field appearance="legacy">
                   <mat-label>ClientId</mat-label>
                   <input matInput [(ngModel)]="Project.AzAccount.ClientId" placeholder="" required />
@@ -230,7 +237,6 @@
 
               <section style="margin-top: 20px; margin-bottom: 10px" *ngIf="vmLocations.length > 0">
                 <h6 class="sub-header">Virtual Machine</h6>
-                <p><small>instructions aksjksjd dhkhdskf f kjsdhfkj</small></p>
                 <div style="margin-top: 20px">
                   <mat-radio-group aria-label="Select an OS" [(ngModel)]="Project.VMConfiguration.OsName">
                     <mat-radio-button style="margin-right: 20px" value="Windows">Windows</mat-radio-button>
@@ -326,7 +332,7 @@
           <button
             mat-raised-button
             color="primary"
-            (click)="startMigration(stepper, infraCreationProject)"
+            (click)="startDumping(stepper, infraCreationProject)"
             [disabled]="!infraCreationProject.vmConfiguration.isVirtualMachineCreated"
           >
             Start Migration
@@ -347,7 +353,7 @@
               <td>{{ infraCreationProject.migrationName }}</td>
               <td>{{ infraCreationProject.requestedDateTime }}</td>
               <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
-              <td>{{ infraCreationProject.migrationStatus }}</td>
+              <td>{{ infraCreationProject.projectStatus }}</td>
               <td>
                 <mat-icon
                   aria-hidden="false"
@@ -398,7 +404,7 @@
                   <button
                     mat-raised-button
                     color="primary"
-                    (click)="restoreProject(infraCreationProject)"
+                    (click)="startRestore(infraCreationProject)"
                     [disabled]="!(infraCreationProject.jobStatus.backup.currentStatus == 'Completed')"
                   >
                     Start Restore
@@ -411,26 +417,14 @@
                       <th scope="col">Requested Date</th>
                       <th scope="col">Machine Name</th>
                       <th scope="col">Status</th>
-                      <th scope="col">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
                       <td>{{ infraCreationProject.migrationName }}</td>
-                      <td>{{ infraCreationProject.requestedDateTime }}</td>
+                      <td>{{ infraCreationProject.jobStatus.backup.startTime }}</td>
                       <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
-                      <td>{{ infraCreationProject.migrationStatus }}</td>
-                      <td>
-                        <button
-                          mat-icon-button
-                          color="primary"
-                          aria-label="Start Backup"
-                          title="Start Backup"
-                          (click)="backupProject(infraCreationProject.id)"
-                        >
-                          <mat-icon>backup</mat-icon> Start
-                        </button>
-                      </td>
+                      <td>{{ infraCreationProject.jobStatus.backup.currentStatus }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -442,7 +436,7 @@
                   <button
                     mat-raised-button
                     color="primary"
-                    (click)="changeEventProject(infraCreationProject)"
+                    (click)="startProcessingChangeEvents(infraCreationProject)"
                     [disabled]="!(infraCreationProject.jobStatus.restore.currentStatus == 'Completed')"
                   >
                     Process Change Event
@@ -461,16 +455,16 @@
                   <tbody>
                     <tr>
                       <td>{{ infraCreationProject.migrationName }}</td>
-                      <td>{{ infraCreationProject.requestedDateTime }}</td>
+                      <td>{{ infraCreationProject.jobStatus.restore.startTime }}</td>
                       <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
-                      <td>{{ infraCreationProject.migrationStatus }}</td>
+                      <td>{{ infraCreationProject.jobStatus.restore.currentStatus }}</td>
                       <td>
                         <button
                           mat-icon-button
                           color="primary"
                           aria-label="Start Restore"
                           title="Start Restore"
-                          (click)="restoreProject(infraCreationProject.id)"
+                          (click)="startRestore(infraCreationProject.id)"
                         >
                           <mat-icon>restore</mat-icon> Start
                         </button>
@@ -494,9 +488,9 @@
                   <tbody>
                     <tr>
                       <td>{{ infraCreationProject.migrationName }}</td>
-                      <td>{{ infraCreationProject.requestedDateTime }}</td>
+                      <td>{{ infraCreationProject.jobStatus.changeStream.startTime }}</td>
                       <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
-                      <td>{{ infraCreationProject.migrationStatus }}</td>
+                      <td>{{ infraCreationProject.jobStatus.changeStream.currentStatus }}</td>
                     </tr>
                   </tbody>
                 </table>
