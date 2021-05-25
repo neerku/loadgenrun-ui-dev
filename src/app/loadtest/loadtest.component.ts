@@ -365,6 +365,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
     if (this.route.snapshot.queryParams.projectId) {
       this.projectId = this.route.snapshot.queryParams.projectId;
       this.getProject(this.projectId);
+      this.getProjectInInterval(this.projectId);
     }
   }
   ngAfterViewInit() {
