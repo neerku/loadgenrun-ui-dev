@@ -4,12 +4,7 @@ import { MaterialModule } from '@app/material.module';
 import { HistoryComponent } from './history.component';
 
 @NgModule({
-    imports: [
-        MaterialModule,
-        MatIconModule
-    ],
-    declarations: [
-        HistoryComponent
-    ],
+  imports: [MaterialModule, MatIconModule],
+  declarations: [HistoryComponent],
 })
 export class HistoryModule {}

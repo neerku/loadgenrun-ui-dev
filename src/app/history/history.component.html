@@ -1,33 +1,38 @@
 <div class="container-fluid mt-3" fxFlexAlign="stretch">
-    <div class="mt-2">
-        <h6 class="sub-header" style="margin-bottom: 20px">Migration History</h6>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Task Name</th>
-                    <th scope="col">Requested Date</th>
-                    <th scope="col">Machine Name</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let project of projectList">
-                    <td>{{ project.migrationName }}</td>
-                    <td>{{ project.requestedDateTime }}</td>
-                    <td>{{ project.vmConfiguration.machineName }}</td>
-                    <td>{{ project.migrationStatus }}</td>
-                    <td>
-                        <mat-icon aria-hidden="false" color="primary" aria-label="Edit" title="Edit"
-                            (click)="editProject(project.id)">edit
-                        </mat-icon>
-                        <mat-icon aria-hidden="false" color="primary" aria-label="Refresh" title="Refresh"
-                            (click)="refreshProject(project.id)">
-                            refresh
-                        </mat-icon>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+  <div class="mt-2">
+    <h6 class="sub-header" style="margin-bottom: 20px">Migration History</h6>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Task Name</th>
+          <th scope="col">Requested Date</th>
+          <th scope="col">Machine Name</th>
+          <th scope="col">Status</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let project of projectList">
+          <td>{{ project.migrationName }}</td>
+          <td>{{ project.requestedDateTime }}</td>
+          <td>{{ project.vmConfiguration.machineName }}</td>
+          <td>{{ project.migrationStatus }}</td>
+          <td>
+            <a routerLink="/configure" [queryParams]="{ projectId: project.id }"
+              ><mat-icon aria-hidden="false" color="primary" aria-label="Launch" title="Launch">launch </mat-icon></a
+            >
+            <mat-icon
+              aria-hidden="false"
+              color="primary"
+              aria-label="Refresh"
+              title="Refresh"
+              (click)="refreshProject(project.id)"
+            >
+              refresh
+            </mat-icon>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

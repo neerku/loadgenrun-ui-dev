@@ -8,6 +8,7 @@ import { TemplatePreviewDialogComponent } from '@app/template-preview-dialog/tem
 import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
 import { interval, Subscription } from 'rxjs';
 import { MatStepper } from '@angular/material/stepper';
+import { ActivatedRoute } from '@angular/router';
 //import { SignKeyObjectInput } from 'crypto';
 
 @Component({
@@ -42,7 +43,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
     }
   }
 
-  constructor(private keyholeService: KeyholeService, private dialog: MatDialog) {}
+  constructor(private keyholeService: KeyholeService, private dialog: MatDialog, private route: ActivatedRoute) {}
   file: any;
   fileContent: string;
   templateToLoad: any;
@@ -53,38 +54,6 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   timer: any;
   //Cosmos to Mongo Properties
   infraCreationProject: any = null;
-  /* {
-    id:"8ece72b6-7f68-40b7-802c-6ad059117a30",
-    AzAccount: {
-      ClientId: "8ece72b6-7f68-40b7-802c-6ad059117a30",
-      ClientSecret: "469o1_cAZd2_M-Zi7U442v0rPBGsTkI_c1",
-      SubscriptionId: "73eb6d29-402a-4726-b8be-2c3415b91f0a",
-      TenantId: "384f62c1-bce1-4bf2-8cc2-d262d500d522"
-    },
-    Configuration: {
-      CosmosAuthenticationDatabase: "test",
-      CosmosDatabases: [],
-      CosmosHost: "cosmosmongo-test.mongo.cosmos.azure.com:10255",
-      CosmosPassword: "XJLY4lZBs1UqEGqg6qBm2l4BY9ro48yzs1PPiPNeQMize1KvByHoelLiRbQM9wwh1Ou4WtBbGK7N0gDuf5BXWA==",
-      CosmosUser: "cosmosmongo-test",
-      DumpAll: true,
-      MongoUri: "mongodb://azureuser:6MFCRWYgO4aM7ezt@cluster0-shard-00-00.wdpzr.mongodb.net:27017,cluster0-shard-00-01.wdpzr.mongodb.net:27017,cluster0-shard-00-02.wdpzr.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-3odlmy-shard-0&authSource=admin",
-      StorageAccountName: "",
-      StorageAccountPrimaryKey: ""
-    },
-    MigrationName: "Task 1",
-    vmConfiguration: {
-      Location: "westus2",
-      MachineName: "MNQA",
-      OsDiskSize: 1024,
-      OsName: "Windows",
-      Password: "pass",
-      ResourceGroupName: "TRS2",
-      UserName: "Admin",
-      VMSize: "Standard_M416-208s_v2",
-      VmPublicIPAddress: ""
-    }
-  }; */
   isCosmosConnectionValid: boolean = false;
   isMongoConnectionValid: boolean = false;
   isConfigurationavailable: boolean = false;
@@ -129,7 +98,8 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   tabIndex: number = 0;
   validationError: string = '';
   showLoader: boolean = false;
-
+  projectId: string = '';
+  @ViewChild('stepper') stepper: MatStepper;
   clearFields(): void {
     this.Project = {
       MigrationName: '',
@@ -384,8 +354,14 @@ export class LoadtestComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.clearFields();
+    if (this.route.snapshot.queryParams.projectId) {
+      this.projectId = this.route.snapshot.queryParams.projectId;
+      this.getProject(this.projectId);
+    }
   }
-
+  ngAfterViewInit() {
+    if (this.projectId != '') this.stepper.selectedIndex = 1;
+  }
   ngOnDestroy() {
     if (this.timer != null) {
       clearInterval(this.timer);

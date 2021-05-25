@@ -26,7 +26,7 @@ import { MatIconModule } from '@angular/material/icon';
     CoreModule,
     SharedModule,
     ShellModule,
-    MaterialModule, 
+    MaterialModule,
     MatIconModule,
     AppRoutingModule, // must be imported as the last module as it contains the fallback route
   ],
@@ -34,4 +34,4 @@ import { MatIconModule } from '@angular/material/icon';
   providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }],
   bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
