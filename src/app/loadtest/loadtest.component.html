@@ -16,10 +16,10 @@
                   </p>
                   <p>Steps:</p>
                   <ol>
-                    <li>Provide the connection details for your existing (cosmos) cluster.</li>
-                    <li>Provide the connection details for your target mongodb cluster.</li>
+                    <li>Provide the connection details for your existing (Cosmos) cluster.</li>
+                    <li>Provide the connection details for your target Mongodb cluster.</li>
                     <li>Provide virtual machine details to execute the migration.</li>
-                    <li>Monitor your Backup , Restore , ChangeStream.</li>
+                    <li>Monitor your Backup,Restore,ChangeStream.</li>
                   </ol>
                   <p>View <a href="/">CosmosToMongo</a> documentation for any further details.</p>
                   <br />
@@ -194,12 +194,11 @@
                 <h6 class="sub-header">Service Principal Details</h6>
                 <div class="instructions">
                   <p>
-                    Please provide Service Principal details to create below resources. This machine will host the
-                    execution of the dump ,restore and change stream.
+                    Please provide Service Principal details to create below resources.
                   </p>
                   <ol>
-                    <li>Virtual Machine:- It will host the execution of dump ,restore and change stream.Please provide the service principal details to create it.</li>
-                    <li>Storage Account:- It will store change events which will be generated during dump process. No details are required for this. It will use your vm details to create it.</li>
+                    <li>Virtual Machine:- This Virtual machine will be used to execute the dump ,restore and change stream processes.</li>
+                    <li>Storage Account:- The storage account will hold the COSMOS DB change events which are generated when the initial migration is running.</li>
                   </ol>
                   <p>To create service principal in azure visit <a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal" target="_blank">Service Principal</a> documentation.</p>
                   <br />
@@ -351,7 +350,7 @@
             Start Migration
           </button>
         </div>
-        <table class="table">
+        <table class="table ">
           <thead>
             <tr>
               <th scope="col">Task Name</th>
@@ -366,7 +365,7 @@
               <td>{{ infraCreationProject.migrationName }}</td>
               <td>{{ infraCreationProject.requestedDateTime }}</td>
               <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
-              <td>{{ infraCreationProject.projectStatus }}</td>
+              <td>{{ infraCreationProject.jobStatus.infraCreation.currentStatus }}</td>
               <td>
                 <mat-icon
                   aria-hidden="false"
@@ -407,11 +406,10 @@
     </mat-step>
     <mat-step>
       <ng-template matStepLabel>Migration</ng-template>
-
       <mat-card>
         <section>
           <mat-tab-group (selectedTabChange)="onTabChanged($event)">
-            <mat-tab label="backup">
+            <mat-tab label="jobs">
               <section class="mt-20" *ngIf="infraCreationProject">
                  <h6 style="margin-bottom: 20px; text-align: right">
                   <button
@@ -423,22 +421,76 @@
                     Start Restore
                   </button>
                 </h6>
-                <table class="table">
-                  <thead>
+                <table class="table table-bordered">
+                  <tbody>
                     <tr>
                       <th scope="col">Task Name</th>
-                      <th scope="col">Requested Date</th>
-                      <th scope="col">Machine Name</th>
-                      <th scope="col">Status</th>
-                      <th scope="col">Action</th>
+                      <td>{{ infraCreationProject.migrationName }}</td> 
+                    </tr>
+                    <tr>
+                      <th scope="col">Machine Name</th>  
+                      <td>{{ infraCreationProject.vmConfiguration.machineName }}</td> 
+                    </tr>
+                    <tr>
+                      <th scope="col">Requested Date</th> 
+                      <td>{{ infraCreationProject.requestedDateTime }}</td> 
+                    </tr>
+                    <tr>
+                      <th scope="col">Infra Creation Status</th> 
+                      <td>{{ infraCreationProject.jobStatus.infraCreation.currentStatus }}</td>  
+                    </tr>
+                  </tbody>
+                </table>
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th scope="col">Job Name</th>      
+                      <th scope="col">Start Date</th> 
+                      <th scope="col">Status</th>                     
+                      <th scope="col">End Date</th>
+                      <th scope="col">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>{{ infraCreationProject.migrationName }}</td>
+                      <td>Backup</td>
                       <td>{{ infraCreationProject.jobStatus.backup.startTime }}</td>
-                      <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
-                      <td>{{ infraCreationProject.jobStatus.backup.currentStatus }}</td>                      
+                      <td>{{ infraCreationProject.jobStatus.backup.currentStatus }}</td>  
+                      <td>{{ infraCreationProject.jobStatus.backup.endTime }}</td>                  
+                      <td>
+                        <button
+                          mat-icon-button
+                          color="primary"
+                          aria-label="Start Restore"
+                          title="Start Restore"
+                          (click)="startRestore(infraCreationProject.id)"
+                        >
+                          <mat-icon>restore</mat-icon> Start
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Restore</td>
+                      <td>{{ infraCreationProject.jobStatus.restore.startTime }}</td>
+                      <td>{{ infraCreationProject.jobStatus.restore.currentStatus }}</td>  
+                      <td>{{ infraCreationProject.jobStatus.restore.endTime }}</td>                        
+                      <td>
+                        <button
+                          mat-icon-button
+                          color="primary"
+                          aria-label="Start Restore"
+                          title="Start Restore"
+                          (click)="startRestore(infraCreationProject.id)"
+                        >
+                          <mat-icon>restore</mat-icon> Start
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Process Change Events</td>
+                      <td>{{ infraCreationProject.jobStatus.changeStream.startTime }}</td>
+                      <td>{{ infraCreationProject.jobStatus.changeStream.currentStatus }}</td>  
+                      <td>{{ infraCreationProject.jobStatus.changeStream.endTime }}</td>                            
                       <td>
                         <button
                           mat-icon-button
@@ -455,25 +507,26 @@
                 </table>
               </section>
             </mat-tab>
-            <mat-tab label="restore">
+            <mat-tab label="validate">
               <section class="mt-20" *ngIf="infraCreationProject">
                 <h6 style="margin-bottom: 20px; text-align: right">
                   <button
                     mat-raised-button
                     color="primary"
                     (click)="startProcessingChangeEvents(infraCreationProject)"
-                    [disabled]="(infraCreationProject.jobStatus.restore.currentStatus == 'In Process')"
+                    [disabled]="!(infraCreationProject.jobStatus.changeStream.currentStatus == 'Completed')"
                   >
-                    Process Change Event
+                    Validate
                   </button>
                 </h6>
                 <table class="table">
                   <thead>
                     <tr>
-                      <th scope="col">Task Name</th>
-                      <th scope="col">Requested Date</th>
-                      <th scope="col">Machine Name</th>
-                      <th scope="col">Status</th>
+                      <th scope="col">Database</th>
+                      <th scope="col">Collection</th>
+                      <th scope="col">CosmosDB</th>
+                      <th scope="col">MongoDB</th>                      
+                      <th scope="col">Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -482,33 +535,13 @@
                       <td>{{ infraCreationProject.jobStatus.restore.startTime }}</td>
                       <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
                       <td>{{ infraCreationProject.jobStatus.restore.currentStatus }}</td>
+                      <td>{{ infraCreationProject.jobStatus.restore.currentStatus }}</td>
                     </tr>
                   </tbody>
                 </table>
+                
               </section>
-            </mat-tab>
-            <mat-tab label="change events">
-              <section class="mt-20" *ngIf="infraCreationProject">
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">Task Name</th>
-                      <th scope="col">Requested Date</th>
-                      <th scope="col">Machine Name</th>
-                      <th scope="col">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{{ infraCreationProject.migrationName }}</td>
-                      <td>{{ infraCreationProject.jobStatus.changeStream.startTime }}</td>
-                      <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
-                      <td>{{ infraCreationProject.jobStatus.changeStream.currentStatus }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </section>
-            </mat-tab>
+            </mat-tab>          
           </mat-tab-group>
           <div style="margin-top: 20px; margin-bottom: 20px; text-align: right" *ngIf="projectId != ''">
             <button mat-raised-button color="primary" (click)="stepper.previous()">Previous</button>
