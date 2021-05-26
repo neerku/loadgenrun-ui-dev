@@ -44,7 +44,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
     }
   }
 
-  constructor(private keyholeService: KeyholeService, private dialog: MatDialog, private route: ActivatedRoute) {}
+  constructor(private keyholeService: KeyholeService, private dialog: MatDialog, private route: ActivatedRoute) { }
   file: any;
   fileContent: string;
   templateToLoad: any;
@@ -203,16 +203,29 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   refreshProject(projectId: any) {
     console.log(projectId);
   }
-  openDialog(projectId: any) {
-    console.log(projectId);
-    const dialogRef = this.dialog.open(DetailsOverviewDialogComponent, {
-      width: '550px',
-      data: { name: 'Project Details', details: this.infraCreationProject },
-    });
+  openDialog(dialogDetails: any, isLog: boolean) {
 
-    dialogRef.afterClosed().subscribe((result) => {
-      console.log('The dialog was closed', result);
-    });
+    if (isLog) {
+
+      const dialogRef = this.dialog.open(DetailsOverviewDialogComponent, {
+        width: '1000px',
+        data: { name: 'Run Logs', details: dialogDetails ,isLog: true},
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        console.log('The dialog was closed', result);
+      });
+      
+    } else {
+      const dialogRef = this.dialog.open(DetailsOverviewDialogComponent, {
+        width: '600px',
+        data: { name: 'Infra Creation Details', details: this.infraCreationProject,isLog: false },
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        console.log('The dialog was closed', result);
+      });
+    }
   }
   validateCosmosDetails(): void {
     console.log(this.Project);
