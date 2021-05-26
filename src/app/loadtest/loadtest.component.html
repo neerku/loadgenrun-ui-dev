@@ -193,16 +193,28 @@
               <section style="margin-top: 20px; margin-bottom: 10px">
                 <h6 class="sub-header">Service Principal Details</h6>
                 <div class="instructions">
-                  <p>
-                    Please provide Service Principal details to create below resources.
-                  </p>
+                  <p>Please provide Service Principal details to create below resources.</p>
                   <ol>
-                    <li>Virtual Machine:- This Virtual machine will be used to execute the dump ,restore and change stream processes.</li>
-                    <li>Storage Account:- The storage account will hold the COSMOS DB change events which are generated when the initial migration is running.</li>
+                    <li>
+                      Virtual Machine:- This Virtual machine will be used to execute the dump ,restore and change stream
+                      processes.
+                    </li>
+                    <li>
+                      Storage Account:- The storage account will hold the COSMOS DB change events which are generated
+                      when the initial migration is running.
+                    </li>
                   </ol>
-                  <p>To create service principal in azure visit <a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal" target="_blank">Service Principal</a> documentation.</p>
+                  <p>
+                    To create service principal in azure visit
+                    <a
+                      href="https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal"
+                      target="_blank"
+                      >Service Principal</a
+                    >
+                    documentation.
+                  </p>
                   <br />
-                </div>                
+                </div>
                 <mat-form-field appearance="legacy">
                   <mat-label>ClientId</mat-label>
                   <input matInput [(ngModel)]="Project.AzAccount.ClientId" placeholder="" required />
@@ -333,14 +345,22 @@
       <div class="mt-2" *ngIf="infraCreationProject">
         <div class="instructions">
           <p>
-            Please wait until your infra is created.Generally it takes 15-20 minutes to provision your VM with required settings.
-          </p><br/>
-          <p style="color: green;">
-            This page auto refreshes every 2 minutes.
-          </p> <br/>
-          
-        </div> 
-        <div style="margin-bottom: 20px; text-align: right" *ngIf="!(infraCreationProject.jobStatus.backup.currentStatus == 'Completed' || infraCreationProject.jobStatus.backup.currentStatus == 'In Process' )">
+            Please wait until your infra is created.Generally it takes 15-20 minutes to provision your VM with required
+            settings.
+          </p>
+          <br />
+          <p style="color: green">This page auto refreshes every 2 minutes.</p>
+          <br />
+        </div>
+        <div
+          style="margin-bottom: 20px; text-align: right"
+          *ngIf="
+            !(
+              infraCreationProject.jobStatus.backup.currentStatus == 'Completed' ||
+              infraCreationProject.jobStatus.backup.currentStatus == 'In Process'
+            )
+          "
+        >
           <button
             mat-raised-button
             color="primary"
@@ -350,7 +370,7 @@
             Start Migration
           </button>
         </div>
-        <table class="table ">
+        <table class="table">
           <thead>
             <tr>
               <th scope="col">Task Name</th>
@@ -403,12 +423,12 @@
           <mat-tab-group (selectedTabChange)="onTabChanged($event)">
             <mat-tab label="jobs">
               <section class="mt-20" *ngIf="infraCreationProject">
-                 <h6 style="margin-bottom: 20px; text-align: right">
+                <h6 style="margin-bottom: 20px; text-align: right">
                   <button
                     mat-raised-button
                     color="primary"
                     (click)="startRestore(infraCreationProject)"
-                    [disabled]="(infraCreationProject.jobStatus.backup.currentStatus == 'In Process')"
+                    [disabled]="infraCreationProject.jobStatus.backup.currentStatus == 'In Process'"
                   >
                     Start Restore
                   </button>
@@ -417,28 +437,28 @@
                   <tbody>
                     <tr>
                       <th scope="col">Task Name</th>
-                      <td>{{ infraCreationProject.migrationName }}</td> 
+                      <td>{{ infraCreationProject.migrationName }}</td>
                     </tr>
                     <tr>
-                      <th scope="col">Machine Name</th>  
-                      <td>{{ infraCreationProject.vmConfiguration.machineName }}</td> 
+                      <th scope="col">Machine Name</th>
+                      <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
                     </tr>
                     <tr>
-                      <th scope="col">Requested Date</th> 
-                      <td>{{ infraCreationProject.requestedDateTime }}</td> 
+                      <th scope="col">Requested Date</th>
+                      <td>{{ infraCreationProject.requestedDateTime }}</td>
                     </tr>
                     <tr>
-                      <th scope="col">Infra Creation Status</th> 
-                      <td>{{ infraCreationProject.jobStatus.infraCreation.currentStatus }}</td>  
+                      <th scope="col">Infra Creation Status</th>
+                      <td>{{ infraCreationProject.jobStatus.infraCreation.currentStatus }}</td>
                     </tr>
                   </tbody>
                 </table>
                 <table class="table table-bordered">
                   <thead>
                     <tr>
-                      <th scope="col">Job Name</th>      
-                      <th scope="col">Start Date</th> 
-                      <th scope="col">Status</th>                     
+                      <th scope="col">Job Name</th>
+                      <th scope="col">Start Date</th>
+                      <th scope="col">Status</th>
                       <th scope="col">End Date</th>
                       <th scope="col">Actions</th>
                     </tr>
@@ -447,8 +467,8 @@
                     <tr>
                       <td>Backup</td>
                       <td>{{ infraCreationProject.jobStatus.backup.startTime }}</td>
-                      <td>{{ infraCreationProject.jobStatus.backup.currentStatus }}</td>  
-                      <td>{{ infraCreationProject.jobStatus.backup.endTime }}</td>                  
+                      <td>{{ infraCreationProject.jobStatus.backup.currentStatus }}</td>
+                      <td>{{ infraCreationProject.jobStatus.backup.endTime }}</td>
                       <td>
                         <button
                           mat-icon-button
@@ -464,8 +484,8 @@
                     <tr>
                       <td>Restore</td>
                       <td>{{ infraCreationProject.jobStatus.restore.startTime }}</td>
-                      <td>{{ infraCreationProject.jobStatus.restore.currentStatus }}</td>  
-                      <td>{{ infraCreationProject.jobStatus.restore.endTime }}</td>                        
+                      <td>{{ infraCreationProject.jobStatus.restore.currentStatus }}</td>
+                      <td>{{ infraCreationProject.jobStatus.restore.endTime }}</td>
                       <td>
                         <button
                           mat-icon-button
@@ -481,8 +501,8 @@
                     <tr>
                       <td>Process Change Events</td>
                       <td>{{ infraCreationProject.jobStatus.changeStream.startTime }}</td>
-                      <td>{{ infraCreationProject.jobStatus.changeStream.currentStatus }}</td>  
-                      <td>{{ infraCreationProject.jobStatus.changeStream.endTime }}</td>                            
+                      <td>{{ infraCreationProject.jobStatus.changeStream.currentStatus }}</td>
+                      <td>{{ infraCreationProject.jobStatus.changeStream.endTime }}</td>
                       <td>
                         <button
                           mat-icon-button
@@ -517,7 +537,7 @@
                       <th scope="col">Database</th>
                       <th scope="col">Collection</th>
                       <th scope="col">CosmosDB</th>
-                      <th scope="col">MongoDB</th>                      
+                      <th scope="col">MongoDB</th>
                       <th scope="col">Action</th>
                     </tr>
                   </thead>
@@ -531,9 +551,8 @@
                     </tr>
                   </tbody>
                 </table>
-                
               </section>
-            </mat-tab>          
+            </mat-tab>
           </mat-tab-group>
           <div style="margin-top: 20px; margin-bottom: 20px; text-align: right" *ngIf="projectId != ''">
             <button mat-raised-button color="primary" (click)="stepper.previous()">Previous</button>
