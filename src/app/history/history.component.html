@@ -16,12 +16,14 @@
           <td>{{ project.migrationName }}</td>
           <td>{{ project.requestedDateTime }}</td>
           <td>{{ project.vmConfiguration.machineName }}</td>
-          <td>{{ project.migrationStatus }}</td>
+          <td>{{ project.projectStatus }}</td>
           <td>
             <a routerLink="/configure" [queryParams]="{ projectId: project.id }"
-              ><mat-icon aria-hidden="false" color="accent" aria-label="Launch" title="Launch">launch </mat-icon></a
+              ><mat-icon aria-hidden="false" color="primary" aria-label="Launch" title="Track Status"
+                >schedule</mat-icon
+              ></a
             >
-            <mat-icon
+            <!-- <mat-icon
               aria-hidden="false"
               color="primary"
               aria-label="Refresh"
@@ -29,7 +31,7 @@
               (click)="refreshProject(project.id)"
             >
               refresh
-            </mat-icon>
+            </mat-icon> -->
           </td>
         </tr>
       </tbody>
