@@ -18,5 +18,5 @@ export class DetailsOverviewDialogComponent {
 export interface DialogData {
   details: any;
   name: string;
-  isLog:boolean;
+  createdFor:string;
 }

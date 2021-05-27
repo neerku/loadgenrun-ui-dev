@@ -1,5 +1,5 @@
 <h1 mat-dialog-title>{{ data.name }}</h1>
-<div mat-dialog-content *ngIf="!(data.isLog)">
+<div mat-dialog-content *ngIf="(data.createdFor=='InfraLogs')">
    <table class="table table-bordered">
     <thead>
       <tr>
@@ -37,8 +37,24 @@
     </tbody>
   </table>
 </div>
-<div mat-dialog-content *ngIf="(data.isLog)">
+<div mat-dialog-content *ngIf="(data.createdFor=='OutputLogs')">
   <p>{{data.details}}</p>
+</div>
+<div mat-dialog-content *ngIf="(data.createdFor=='ValidationLogs')">
+  <table class="table table-bordered">
+   <thead>
+     <tr>
+       <th scope="col">Cosmos Document</th>
+       <th scope="col">Mongo Document</th>
+     </tr>
+   </thead>
+   <tbody>
+     <tr>
+      <td>{{data.details.cosmosDocument}}</td>
+      <td>{{data.details.mongoDocument}}</td>
+     </tr>     
+   </tbody>
+ </table>
 </div>
   <div mat-dialog-actions>
     <button mat-raised-button color="primary" (click)="onNoClick()">Ok</button>

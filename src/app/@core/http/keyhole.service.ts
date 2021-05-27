@@ -9,7 +9,7 @@ import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript';
 export class KeyholeService {
   //baseUrl = environment.baseUrl;
   //apiUrl = 'https://mloadgenapi.tools.peerislands.io';
-  //apiUrl = 'https://load-gen-api-dot-onedata-mvp.uc.r.appspot.com';
+  //apiUrl = 'https://cosmostomongo-dot-onedata-mvp.appspot.com';
   apiUrl = 'https://cosmostomongo.azurewebsites.net';
   //apiUrl: string;
 
@@ -51,11 +51,23 @@ export class KeyholeService {
     return this.http.post(this.apiUrl + '/project/' + id + '/dump', '');
   }
 
+  reStartDumpProcess(id: string) {
+    return this.http.post(this.apiUrl + '/project/' + id + '/dump/restart', '');
+  }
+
   startRestoreProcess(id: string) {
     return this.http.post(this.apiUrl + '/project/' + id + '/restore', '');
   }
 
   processChangeStream(id: string) {
     return this.http.post(this.apiUrl + '/project/' + id + '/events', '');
+  }
+
+  validateMigration(id: string) {
+    return this.http.post(this.apiUrl + '/utility/validate/migration/'+ id , '');
+  }
+
+  getSampleValidationData(id:any,database: string, collection:string) {
+    return this.http.post(this.apiUrl + '/utility/validate/migration/'+ id +'/'+ database+ '/' + collection+ '/sample', '');
   }
 }

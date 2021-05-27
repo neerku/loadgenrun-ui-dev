@@ -10,6 +10,7 @@ import { interval, Subscription } from 'rxjs';
 import { MatStepper } from '@angular/material/stepper';
 import { ActivatedRoute } from '@angular/router';
 import { DetailsOverviewDialogComponent } from './details-overview-dialog/details-overview-dialog.component';
+import { promise } from 'selenium-webdriver';
 //import { SignKeyObjectInput } from 'crypto';
 
 @Component({
@@ -63,6 +64,8 @@ export class LoadtestComponent implements OnInit, OnDestroy {
   projectList: [];
   vmLocations: [];
   vmSizes: [];
+  dataForValidation: [];
+  sampleDataForValidation: any;
   isBackupStarted: boolean = false;
   Project: Project = {
     MigrationName: '',
@@ -159,7 +162,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
       stepper.next();
     });
   }
-  startDumping(stepper: MatStepper, project: any) {
+  startDumping(project: any) {
     this.showLoader = true;
 
     this.keyholeService.startDumpProcess(project.id).subscribe(
@@ -171,8 +174,22 @@ export class LoadtestComponent implements OnInit, OnDestroy {
         this.showLoader = false;
       }
     );
-    stepper.next();
   }
+
+  RestartDumping(project: any) {
+    this.showLoader = true;
+
+    this.keyholeService.reStartDumpProcess(project.id).subscribe(
+      (result: any) => {
+        this.getProject(project.id);
+        this.showLoader = false;
+      },
+      (error) => {
+        this.showLoader = false;
+      }
+    );
+  }
+
   startRestore(project: any) {
     this.showLoader = true;
     this.keyholeService.startRestoreProcess(project.id).subscribe(
@@ -185,6 +202,8 @@ export class LoadtestComponent implements OnInit, OnDestroy {
       }
     );
   }
+
+
   startProcessingChangeEvents(project: any) {
     this.showLoader = true;
     this.keyholeService.processChangeStream(project.id).subscribe(
@@ -197,36 +216,74 @@ export class LoadtestComponent implements OnInit, OnDestroy {
       }
     );
   }
+
+  validateData(stepper: MatStepper) {
+    this.showLoader = true;
+    this.keyholeService.validateMigration(this.infraCreationProject.id).subscribe((result: any) => {
+      this.dataForValidation = result
+      this.showLoader = false;
+      stepper.next();
+    });
+  }
+
+  getSampleDataForValidation(database: string, collection: string) {
+    this.showLoader = true;
+    this.keyholeService.getSampleValidationData(this.infraCreationProject.id, database, collection).subscribe((result: any) => {
+      this.sampleDataForValidation = result
+      this.showLoader = false;
+      return result;
+    });
+
+  }
+
   editProject(projectId: any) {
     console.log(projectId);
   }
   refreshProject(projectId: any) {
     console.log(projectId);
   }
-  openDialog(dialogDetails: any, isLog: boolean) {
 
-    if (isLog) {
+  openDialogForInfraLogs() {
+    const dialogRef = this.dialog.open(DetailsOverviewDialogComponent, {
+      width: '600px',
+      data: { name: 'Infra Creation Details', details: this.infraCreationProject, createdFor: "InfraLogs" },
+    });
 
-      const dialogRef = this.dialog.open(DetailsOverviewDialogComponent, {
-        width: '1000px',
-        data: { name: 'Run Logs', details: dialogDetails ,isLog: true},
-      });
-
-      dialogRef.afterClosed().subscribe((result) => {
-        console.log('The dialog was closed', result);
-      });
-      
-    } else {
-      const dialogRef = this.dialog.open(DetailsOverviewDialogComponent, {
-        width: '600px',
-        data: { name: 'Infra Creation Details', details: this.infraCreationProject,isLog: false },
-      });
-
-      dialogRef.afterClosed().subscribe((result) => {
-        console.log('The dialog was closed', result);
-      });
-    }
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('The dialog was closed', result);
+    });
   }
+  openDialogForOutputLogs() {
+    const dialogRef = this.dialog.open(DetailsOverviewDialogComponent, {
+      width: '1000px',
+      data: { name: 'Run Logs', details: this.infraCreationProject, createdFor: "OutputLogs" },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('The dialog was closed', result);
+    });
+
+
+  }
+  openDialogForValidationLogs(row: any) {
+    this.showLoader = true;
+
+    const dialogRef = this.dialog.open(DetailsOverviewDialogComponent, {
+      width: '1000px',
+      data: { name: 'Validation', details: '', createdFor: "ValidationLogs" },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('The dialog was closed', result);
+    });
+    this.keyholeService.getSampleValidationData(this.infraCreationProject.id, row.database, row.collection).subscribe((result: any) => {
+      dialogRef.componentInstance.data.details = result
+      this.showLoader = false;
+    });
+  }
+
+
+
   validateCosmosDetails(): void {
     console.log(this.Project);
     this.showLoader = true;

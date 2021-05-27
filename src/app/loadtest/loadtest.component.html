@@ -303,9 +303,9 @@
               <td>{{ infraCreationProject.requestedDateTime }}</td>
               <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
               <td>{{ infraCreationProject.jobStatus.infraCreation.currentStatus }}</td>
-              <td >
+              <td>
                 <mat-icon style="padding-left: 10px;" aria-hidden="false" color="warn" aria-label="Logs" title="Logs"
-                (click)="openDialog('',false)">
+                  (click)="openDialogForInfraLogs()">
                   view_headline
                 </mat-icon>
               </td>
@@ -331,9 +331,7 @@
     <mat-step>
       <ng-template matStepLabel>Migration</ng-template>
       <mat-card>
-        <section>
-          <mat-tab-group (selectedTabChange)="onTabChanged($event)">
-            <mat-tab label="jobs">
+        <section>         
               <section class="mt-20" *ngIf="infraCreationProject">
                 <!-- <h6 style="margin-bottom: 20px; text-align: right">
                   <button mat-raised-button color="primary" (click)="startRestore(infraCreationProject)"
@@ -379,17 +377,17 @@
                       <td>{{ infraCreationProject.jobStatus.backup.endTime }}</td>
                       <td>
                         <mat-icon aria-hidden="false" color="primary" aria-label="Start" title="Start"
-                        (click)="startRestore(infraCreationProject.id)">
-                        play_circle_filled
-                      </mat-icon>
-                      <mat-icon aria-hidden="false" color="primary" aria-label="Restart" title="Restart"
-                        (click)="startRestore(infraCreationProject.id)">
-                        restore
-                      </mat-icon>
-                      <mat-icon aria-hidden="false" color="primary" aria-label="View Logs" title="Logs"
-                        (click)="openDialog('',true)">
-                        view_headline
-                      </mat-icon>
+                          (click)="startRestore(infraCreationProject.id)">
+                          play_circle_filled
+                        </mat-icon>
+                        <mat-icon aria-hidden="false" color="primary" aria-label="Restart" title="Restart"
+                          (click)="startRestore(infraCreationProject.id)">
+                          restore
+                        </mat-icon>
+                        <mat-icon aria-hidden="false" color="primary" aria-label="View Logs" title="Logs"
+                          (click)="openDialogForOutputLogs()">
+                          view_headline
+                        </mat-icon>
                       </td>
                     </tr>
                     <tr>
@@ -398,18 +396,18 @@
                       <td>{{ infraCreationProject.jobStatus.restore.currentStatus }}</td>
                       <td>{{ infraCreationProject.jobStatus.restore.endTime }}</td>
                       <td>
-                        <mat-icon aria-hidden="false" color="accent" aria-label="Start" title="Start"
-                        (click)="startRestore(infraCreationProject.id)">
-                        play_circle_filled
-                      </mat-icon>
-                      <mat-icon aria-hidden="false" color="primary" aria-label="Restart" title="Restart"
-                        (click)="startRestore(infraCreationProject.id)">
-                        restore
-                      </mat-icon>
-                      <mat-icon aria-hidden="false" color="warn" aria-label="View Logs" title="Logs"
-                      (click)="openDialog('',true)">
-                        view_headline
-                      </mat-icon>
+                        <mat-icon aria-hidden="false" color="primary" aria-label="Start" title="Start"
+                          (click)="startRestore(infraCreationProject.id)">
+                          play_circle_filled
+                        </mat-icon>
+                        <mat-icon aria-hidden="false" color="primary" aria-label="Restart" title="Restart"
+                          (click)="startRestore(infraCreationProject.id)">
+                          restore
+                        </mat-icon>
+                        <mat-icon aria-hidden="false" color="primary" aria-label="View Logs" title="Logs"
+                          (click)="openDialogForOutputLogs()">
+                          view_headline
+                        </mat-icon>
                       </td>
                     </tr>
                     <tr>
@@ -418,7 +416,7 @@
                       <td>{{ infraCreationProject.jobStatus.changeStream.currentStatus }}</td>
                       <td>{{ infraCreationProject.jobStatus.changeStream.endTime }}</td>
                       <td>
-                        <mat-icon aria-hidden="false" color="accent" aria-label="Start" title="Start"
+                        <mat-icon aria-hidden="false" color="primary" aria-label="Start" title="Start"
                           (click)="startRestore(infraCreationProject.id)">
                           play_circle_filled
                         </mat-icon>
@@ -426,8 +424,8 @@
                           (click)="startRestore(infraCreationProject.id)">
                           restore
                         </mat-icon>
-                        <mat-icon aria-hidden="false" color="warn" aria-label="View Logs" title="Logs"
-                        (click)="openDialog('',true)">
+                        <mat-icon aria-hidden="false" color="primary" aria-label="View Logs" title="Logs"
+                          (click)="openDialogForOutputLogs()">
                           view_headline
                         </mat-icon>
                       </td>
@@ -435,38 +433,52 @@
                   </tbody>
                 </table>
               </section>
-            </mat-tab>
-            <mat-tab label="validate">
-              <section class="mt-20" *ngIf="infraCreationProject">
-                <h6 style="margin-bottom: 20px; text-align: right">
-                  <button mat-raised-button color="primary" (click)="startProcessingChangeEvents(infraCreationProject)"
-                    [disabled]="!(infraCreationProject.jobStatus.changeStream.currentStatus == 'Completed')">
-                    Validate
-                  </button>
-                </h6>
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">Database</th>
-                      <th scope="col">Collection</th>
-                      <th scope="col">CosmosDB</th>
-                      <th scope="col">MongoDB</th>
-                      <th scope="col">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{{ infraCreationProject.migrationName }}</td>
-                      <td>{{ infraCreationProject.jobStatus.restore.startTime }}</td>
-                      <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
-                      <td>{{ infraCreationProject.jobStatus.restore.currentStatus }}</td>
-                      <td>{{ infraCreationProject.jobStatus.restore.currentStatus }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </section>
-            </mat-tab>
-          </mat-tab-group>
+          <div style="margin-top: 20px; margin-bottom: 20px; text-align: right" *ngIf="projectId != ''">
+            <button mat-raised-button color="primary" (click)="stepper.previous()">Previous</button>
+          </div>
+          <div style="margin-top: 20px; margin-bottom: 20px; text-align: right" *ngIf="projectId != ''">
+            <button mat-raised-button color="primary" (click)="validateData(stepper)">Validate</button>
+          </div>
+        </section>
+      </mat-card>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Validation</ng-template>
+      <mat-card>
+        <section>
+          <section class="mt-20" *ngIf="infraCreationProject">
+            <h6 style="margin-bottom: 20px; text-align: right">
+              <!-- <button mat-raised-button color="primary" (click)="startProcessingChangeEvents(infraCreationProject)"
+                [disabled]="!(infraCreationProject.jobStatus.changeStream.currentStatus == 'Completed')">
+                Validate
+              </button> -->
+            </h6>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Database</th>
+                  <th scope="col">Collection</th>
+                  <th scope="col">CosmosDB</th>
+                  <th scope="col">MongoDB</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let result of dataForValidation">
+                  <td>{{ result.database }}</td>
+                  <td>{{ result.collection }}</td>
+                  <td> Document Count: {{result.cosmosDocumentCount }}</td>
+                  <td> Document Count: {{result.mongoDocumentCount}}</td>
+                  <td>
+                    <mat-icon aria-hidden="false" color="primary" aria-label="Get Sample Data" title="Get Sample Data"
+                      (click)="openDialogForValidationLogs(result)">
+                      image_search
+                    </mat-icon>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
           <div style="margin-top: 20px; margin-bottom: 20px; text-align: right" *ngIf="projectId != ''">
             <button mat-raised-button color="primary" (click)="stepper.previous()">Previous</button>
           </div>
