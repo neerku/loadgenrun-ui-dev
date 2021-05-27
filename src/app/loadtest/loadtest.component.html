@@ -364,16 +364,16 @@
             <p><strong>Note:</strong></p>
                   <ol>
                     <li>
-                      Only one job can run at a time.
+                     Stages will be run sequentially.
                      </li>
                     <li>
-                     Backup can be started only once. Later you can use restart option.
+                     If Backup fails use restart option to rerun the Backups.
                     </li>
                     <li>
-                     Restart will not affect your change stream listener which is running in background.
+                     Restart will not affect your change stream listener.Change Stream Listener will continue to run in the background.
                      </li>
                     <li>
-                     Once the backup is completed, Restore & ChangeEvents can run multiple times.
+                     Once the backup is complete, Restore & ChangeEvents can be run multiple times.
                     </li>
                   </ol><br/> </div>
             <table class="table table-bordered">
