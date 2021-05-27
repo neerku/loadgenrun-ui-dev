@@ -276,7 +276,7 @@
           <p style="color: green">This page auto refreshes every 2 minutes.</p>
           <br />
         </div>
-        <div style="margin-bottom: 20px; text-align: right" *ngIf="
+        <!-- <div style="margin-bottom: 20px; text-align: right" *ngIf="
             !(
               infraCreationProject.jobStatus.backup.currentStatus == 'Completed' ||
               infraCreationProject.jobStatus.backup.currentStatus == 'In Process'
@@ -286,7 +286,7 @@
             [disabled]="!infraCreationProject.vmConfiguration.isVirtualMachineCreated">
             Start Migration
           </button>
-        </div>
+        </div> -->
         <table class="table">
           <thead>
             <tr>
@@ -300,11 +300,11 @@
           <tbody>
             <tr>
               <td>{{ infraCreationProject.migrationName }}</td>
-              <td>{{ infraCreationProject.requestedDateTime }}</td>
+              <td>{{ infraCreationProject.requestedDateTime | date:'M/d/yy HH:mm:ss' }}</td>
               <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
               <td>{{ infraCreationProject.jobStatus.infraCreation.currentStatus }}</td>
               <td>
-                <mat-icon style="padding-left: 10px;" aria-hidden="false" color="warn" aria-label="Logs" title="Logs"
+                <mat-icon style="padding-left: 10px;" aria-hidden="false" color="primary" aria-label="Logs" title="Logs"
                   (click)="openDialogForInfraLogs()">
                   view_headline
                 </mat-icon>
@@ -313,7 +313,8 @@
           </tbody>
         </table>
         <div style="margin-top: 20px; margin-bottom: 20px; text-align: right" *ngIf="projectId != ''">
-          <button mat-raised-button color="primary" (click)="stepper.next()">Next</button>
+          <button mat-raised-button color="primary" (click)="stepper.next()"
+            [disabled]="!infraCreationProject.vmConfiguration.isVirtualMachineCreated">Next</button>
         </div>
       </div>
       <section>
@@ -331,113 +332,126 @@
     <mat-step>
       <ng-template matStepLabel>Migration</ng-template>
       <mat-card>
-        <section>         
-              <section class="mt-20" *ngIf="infraCreationProject">
-                <!-- <h6 style="margin-bottom: 20px; text-align: right">
+        <section>
+          <section class="mt-20" *ngIf="infraCreationProject">
+            <!-- <h6 style="margin-bottom: 20px; text-align: right">
                   <button mat-raised-button color="primary" (click)="startRestore(infraCreationProject)"
                     [disabled]="infraCreationProject.jobStatus.backup.currentStatus == 'In Process'">
                     Start Restore
                   </button>
                 </h6> -->
-                <table class="table table-bordered">
-                  <tbody>
-                    <tr>
-                      <th scope="col">Task Name</th>
-                      <td>{{ infraCreationProject.migrationName }}</td>
-                    </tr>
-                    <tr>
-                      <th scope="col">Machine Name</th>
-                      <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
-                    </tr>
-                    <tr>
-                      <th scope="col">Requested Date</th>
-                      <td>{{ infraCreationProject.requestedDateTime }}</td>
-                    </tr>
-                    <tr>
-                      <th scope="col">Infra Creation Status</th>
-                      <td>{{ infraCreationProject.jobStatus.infraCreation.currentStatus }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <table class="table table-bordered">
-                  <thead>
-                    <tr>
-                      <th scope="col">Job Name</th>
-                      <th scope="col">Start Date</th>
-                      <th scope="col">Status</th>
-                      <th scope="col">End Date</th>
-                      <th scope="col">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Backup</td>
-                      <td>{{ infraCreationProject.jobStatus.backup.startTime }}</td>
-                      <td>{{ infraCreationProject.jobStatus.backup.currentStatus }}</td>
-                      <td>{{ infraCreationProject.jobStatus.backup.endTime }}</td>
-                      <td>
-                        <mat-icon aria-hidden="false" color="primary" aria-label="Start" title="Start"
-                          (click)="startRestore(infraCreationProject.id)">
-                          play_circle_filled
-                        </mat-icon>
-                        <mat-icon aria-hidden="false" color="primary" aria-label="Restart" title="Restart"
-                          (click)="startRestore(infraCreationProject.id)">
-                          restore
-                        </mat-icon>
-                        <mat-icon aria-hidden="false" color="primary" aria-label="View Logs" title="Logs"
-                          (click)="openDialogForOutputLogs()">
-                          view_headline
-                        </mat-icon>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Restore</td>
-                      <td>{{ infraCreationProject.jobStatus.restore.startTime }}</td>
-                      <td>{{ infraCreationProject.jobStatus.restore.currentStatus }}</td>
-                      <td>{{ infraCreationProject.jobStatus.restore.endTime }}</td>
-                      <td>
-                        <mat-icon aria-hidden="false" color="primary" aria-label="Start" title="Start"
-                          (click)="startRestore(infraCreationProject.id)">
-                          play_circle_filled
-                        </mat-icon>
-                        <mat-icon aria-hidden="false" color="primary" aria-label="Restart" title="Restart"
-                          (click)="startRestore(infraCreationProject.id)">
-                          restore
-                        </mat-icon>
-                        <mat-icon aria-hidden="false" color="primary" aria-label="View Logs" title="Logs"
-                          (click)="openDialogForOutputLogs()">
-                          view_headline
-                        </mat-icon>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Process Change Events</td>
-                      <td>{{ infraCreationProject.jobStatus.changeStream.startTime }}</td>
-                      <td>{{ infraCreationProject.jobStatus.changeStream.currentStatus }}</td>
-                      <td>{{ infraCreationProject.jobStatus.changeStream.endTime }}</td>
-                      <td>
-                        <mat-icon aria-hidden="false" color="primary" aria-label="Start" title="Start"
-                          (click)="startRestore(infraCreationProject.id)">
-                          play_circle_filled
-                        </mat-icon>
-                        <mat-icon aria-hidden="false" color="primary" aria-label="Restart" title="Restart"
-                          (click)="startRestore(infraCreationProject.id)">
-                          restore
-                        </mat-icon>
-                        <mat-icon aria-hidden="false" color="primary" aria-label="View Logs" title="Logs"
-                          (click)="openDialogForOutputLogs()">
-                          view_headline
-                        </mat-icon>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </section>
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <th scope="col">Task Name</th>
+                  <td>{{ infraCreationProject.migrationName }}</td>
+                </tr>
+                <tr>
+                  <th scope="col">Machine Name</th>
+                  <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
+                </tr>
+                <tr>
+                  <th scope="col">Requested Date</th>
+                  <td>{{ infraCreationProject.requestedDateTime | date:'M/d/yy HH:mm:ss' }}</td>
+                </tr>
+                <tr>
+                  <th scope="col">Infra Creation Status</th>
+                  <td>{{ infraCreationProject.jobStatus.infraCreation.currentStatus }}</td>
+                </tr>
+              </tbody>
+            </table><br/>
+            <div class="instructions">           
+            <p><strong>Note:</strong></p>
+                  <ol>
+                    <li>
+                      Only one job can run at a time.
+                     </li>
+                    <li>
+                     Backup can be started only once. Later you can use restart option.
+                    </li>
+                    <li>
+                     Restart will not affect your change stream listener which is running in background.
+                     </li>
+                    <li>
+                     Once the backup is completed, Restore & ChangeEvents can run multiple times.
+                    </li>
+                  </ol><br/> </div>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th scope="col">Job Name</th>
+                  <th scope="col">Start Date</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">End Date</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Backup</td>
+                  <td>{{ infraCreationProject.jobStatus.backup.startTime | date:'M/d/yy HH:mm:ss' }}</td>
+                  <td>{{ infraCreationProject.jobStatus.backup.currentStatus }}</td>
+                  <td>{{ infraCreationProject.jobStatus.backup.endTime | date:'M/d/yy HH:mm:ss' }}</td>
+                  <td>
+                    <mat-icon aria-hidden="false" color="primary" aria-label="Start" title="Start"
+                      [class.disable-icon]="(infraCreationProject.jobStatus.backup.isJobEverStarted)"
+                      (click)="startDumping(infraCreationProject)">
+                      play_circle_filled
+                    </mat-icon>
+                    <mat-icon aria-hidden="false" color="primary" aria-label="Restart" title="Restart"
+                    [class.disable-icon]="(infraCreationProject.jobStatus.backup.currentStatus == 'Pending' || infraCreationProject.jobStatus.isAnyJobRunning)"
+                      (click)="restartDumping(infraCreationProject.id)">
+                      restore
+                    </mat-icon>               
+                    <mat-icon aria-hidden="false" color="primary" aria-label="View Logs" title="Logs"
+                    [class.disable-icon]="infraCreationProject.jobStatus.backup.currentStatus == 'Pending'"
+                      (click)="openDialogForOutputLogs()">
+                      view_headline
+                    </mat-icon>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Restore</td>
+                  <td>{{ infraCreationProject.jobStatus.restore.startTime | date:'M/d/yy HH:mm:ss' }}</td>
+                  <td>{{ infraCreationProject.jobStatus.restore.currentStatus }}</td>
+                  <td>{{ infraCreationProject.jobStatus.restore.endTime | date:'M/d/yy HH:mm:ss' }}</td>
+                  <td>
+                    <mat-icon aria-hidden="false" color="primary" aria-label="Start" title="Start"
+                    [class.disable-icon]="(infraCreationProject.jobStatus.backup.currentStatus != 'Completed' && !infraCreationProject.jobStatus.isAnyJobRunning) || infraCreationProject.jobStatus.isAnyJobRunning"
+                      (click)="startRestore(infraCreationProject)">
+                      play_circle_filled
+                    </mat-icon>
+                    <mat-icon aria-hidden="false" color="primary" aria-label="View Logs" title="Logs"
+                    [class.disable-icon]="infraCreationProject.jobStatus.restore.currentStatus == 'Pending'"
+                      (click)="openDialogForOutputLogs()">
+                      view_headline
+                    </mat-icon>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Process Change Events</td>
+                  <td>{{ infraCreationProject.jobStatus.changeStream.startTime | date:'M/d/yy HH:mm:ss' }}</td>
+                  <td>{{ infraCreationProject.jobStatus.changeStream.currentStatus }}</td>
+                  <td>{{ infraCreationProject.jobStatus.changeStream.endTime | date:'M/d/yy HH:mm:ss' }}</td>
+                  <td>
+                    <mat-icon aria-hidden="false" color="primary" aria-label="Start" title="Start"
+                    [class.disable-icon]="(!(infraCreationProject.jobStatus.backup.currentStatus == 'Completed' && infraCreationProject.jobStatus.restore.currentStatus == 'Completed') && !infraCreationProject.jobStatus.isAnyJobRunning) || infraCreationProject.jobStatus.isAnyJobRunning"
+                      (click)="startProcessingChangeEvents(infraCreationProject)">
+                      play_circle_filled
+                    </mat-icon>
+                    <mat-icon aria-hidden="false" color="primary" aria-label="View Logs" title="Logs"
+                    [class.disable-icon]="infraCreationProject.jobStatus.changeStream.currentStatus == 'Pending'"
+                      (click)="openDialogForOutputLogs()">
+                      view_headline
+                    </mat-icon>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
           <div style="margin-top: 20px; margin-bottom: 20px; text-align: right" *ngIf="projectId != ''">
             <button mat-raised-button color="primary" (click)="stepper.previous()">Previous</button>
-          </div>
-          <div style="margin-top: 20px; margin-bottom: 20px; text-align: right" *ngIf="projectId != ''">
-            <button mat-raised-button color="primary" (click)="validateData(stepper)">Validate</button>
+            <button mat-raised-button color="primary" (click)="validateData(stepper)" [disabled]="!(infraCreationProject.jobStatus.backup.currentStatus == 'Completed' && infraCreationProject.jobStatus.restore.currentStatus == 'Completed' && infraCreationProject.jobStatus.changeStream.currentStatus == 'Completed')">Validate</button>
           </div>
         </section>
       </mat-card>

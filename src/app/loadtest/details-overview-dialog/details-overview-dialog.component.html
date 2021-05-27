@@ -14,28 +14,32 @@
         <td>Resource Group</td>
         <td>{{data.details.infraStatus.resourceGroup === null ? "Pending" : data.details.infraStatus.resourceGroup.status }}</td>
         <td>{{data.details.infraStatus.resourceGroup === null ? "N/A" : data.details.infraStatus.resourceGroup.resourceName }}</td>
-        <td>{{data.details.infraStatus.resourceGroup === null ? "N/A" : data.details.infraStatus.resourceGroup.creationTime }}</td>   
+        <td>{{data.details.infraStatus.resourceGroup === null ? "N/A" : data.details.infraStatus.resourceGroup.creationTime | date:'M/d/yy HH:mm:ss' }}</td>   
       </tr>
       <tr>
         <td>Storage Account</td>
         <td>{{data.details.infraStatus.storage === null ? "Pending" : data.details.infraStatus.storage.status }}</td>
         <td>{{data.details.infraStatus.storage === null ? "N/A" : data.details.infraStatus.storage.resourceName }}</td>  
-        <td>{{data.details.infraStatus.storage === null ? "N/A" : data.details.infraStatus.storage.creationTime }}</td>        
+        <td>{{data.details.infraStatus.storage === null ? "N/A" : data.details.infraStatus.storage.creationTime | date:'M/d/yy HH:mm:ss' }}</td>        
       </tr>
       <tr>
         <td>IP Address</td>
         <td>{{data.details.infraStatus.ipAddress === null ? "Pending" : data.details.infraStatus.ipAddress.status }}</td>
         <td>{{data.details.infraStatus.ipAddress === null ? "N/A" : data.details.infraStatus.ipAddress.value }}</td>  
-        <td>{{data.details.infraStatus.ipAddress === null ? "N/A" : data.details.infraStatus.ipAddress.creationTime }}</td>         
+        <td>{{data.details.infraStatus.ipAddress === null ? "N/A" : data.details.infraStatus.ipAddress.creationTime | date:'M/d/yy HH:mm:ss' }}</td>         
       </tr>
       <tr>
         <td>Virtual Machine</td>
         <td>{{data.details.infraStatus.machine === null ? "Pending" : data.details.infraStatus.machine.status }}</td>
         <td>{{data.details.infraStatus.machine === null ? "N/A" : data.details.infraStatus.machine.resourceName }}</td> 
-        <td>{{data.details.infraStatus.machine === null ? "N/A" : data.details.infraStatus.machine.creationTime }}</td>         
+        <td>{{data.details.infraStatus.machine === null ? "N/A" : data.details.infraStatus.machine.creationTime | date:'M/d/yy HH:mm:ss' }}</td>         
       </tr>
     </tbody>
   </table>
+  <div *ngIf="data.details.infraStatus.errorDetails">
+    <h6 class="sub-header-error">Error Details</h6>
+    <p>{{data.details.infraStatus.errorDetails}}</p>
+  </div>
 </div>
 <div mat-dialog-content *ngIf="(data.createdFor=='OutputLogs')">
   <p>{{data.details}}</p>

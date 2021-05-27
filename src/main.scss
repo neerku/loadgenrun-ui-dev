@@ -163,6 +163,10 @@ mat-sidenav {
   text-transform: uppercase;
   font-weight: 600;
 }
+.sub-header-error{
+  @extend .sub-header;  
+  color: red;
+}
 
 .mt-20 {
   margin-top: 20px;
@@ -174,4 +178,8 @@ mat-sidenav {
 }
 .mat-horizontal-stepper-header {
   pointer-events: none !important;
+}
+
+.disable-icon{
+  cursor: not-allowed !important;
 }

@@ -176,7 +176,7 @@ export class LoadtestComponent implements OnInit, OnDestroy {
     );
   }
 
-  RestartDumping(project: any) {
+  restartDumping(project: any) {
     this.showLoader = true;
 
     this.keyholeService.reStartDumpProcess(project.id).subscribe(
