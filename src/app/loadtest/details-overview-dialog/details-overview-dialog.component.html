@@ -1,6 +1,6 @@
 <h1 mat-dialog-title>{{ data.name }}</h1>
 <div mat-dialog-content *ngIf="(data.createdFor=='InfraLogs')">
-   <table class="table table-bordered">
+  <table class="table table-bordered">
     <thead>
       <tr>
         <th scope="col">Infra</th>
@@ -12,27 +12,34 @@
     <tbody>
       <tr>
         <td>Resource Group</td>
-        <td>{{data.details.infraStatus.resourceGroup === null ? "Pending" : data.details.infraStatus.resourceGroup.status }}</td>
-        <td>{{data.details.infraStatus.resourceGroup === null ? "N/A" : data.details.infraStatus.resourceGroup.resourceName }}</td>
-        <td>{{data.details.infraStatus.resourceGroup === null ? "N/A" : data.details.infraStatus.resourceGroup.creationTime | date:'M/d/yy HH:mm:ss' }}</td>   
+        <td>{{data.details.infraStatus.resourceGroup === null ? "Pending" :
+          data.details.infraStatus.resourceGroup.status }}</td>
+        <td>{{data.details.infraStatus.resourceGroup === null ? "N/A" :
+          data.details.infraStatus.resourceGroup.resourceName }}</td>
+        <td>{{data.details.infraStatus.resourceGroup === null ? "N/A" :
+          data.details.infraStatus.resourceGroup.creationTime | date:'M/d/yy HH:mm:ss' }}</td>
       </tr>
       <tr>
         <td>Storage Account</td>
         <td>{{data.details.infraStatus.storage === null ? "Pending" : data.details.infraStatus.storage.status }}</td>
-        <td>{{data.details.infraStatus.storage === null ? "N/A" : data.details.infraStatus.storage.resourceName }}</td>  
-        <td>{{data.details.infraStatus.storage === null ? "N/A" : data.details.infraStatus.storage.creationTime | date:'M/d/yy HH:mm:ss' }}</td>        
+        <td>{{data.details.infraStatus.storage === null ? "N/A" : data.details.infraStatus.storage.resourceName }}</td>
+        <td>{{data.details.infraStatus.storage === null ? "N/A" : data.details.infraStatus.storage.creationTime |
+          date:'M/d/yy HH:mm:ss' }}</td>
       </tr>
       <tr>
         <td>IP Address</td>
-        <td>{{data.details.infraStatus.ipAddress === null ? "Pending" : data.details.infraStatus.ipAddress.status }}</td>
-        <td>{{data.details.infraStatus.ipAddress === null ? "N/A" : data.details.infraStatus.ipAddress.value }}</td>  
-        <td>{{data.details.infraStatus.ipAddress === null ? "N/A" : data.details.infraStatus.ipAddress.creationTime | date:'M/d/yy HH:mm:ss' }}</td>         
+        <td>{{data.details.infraStatus.ipAddress === null ? "Pending" : data.details.infraStatus.ipAddress.status }}
+        </td>
+        <td>{{data.details.infraStatus.ipAddress === null ? "N/A" : data.details.infraStatus.ipAddress.value }}</td>
+        <td>{{data.details.infraStatus.ipAddress === null ? "N/A" : data.details.infraStatus.ipAddress.creationTime |
+          date:'M/d/yy HH:mm:ss' }}</td>
       </tr>
       <tr>
         <td>Virtual Machine</td>
         <td>{{data.details.infraStatus.machine === null ? "Pending" : data.details.infraStatus.machine.status }}</td>
-        <td>{{data.details.infraStatus.machine === null ? "N/A" : data.details.infraStatus.machine.resourceName }}</td> 
-        <td>{{data.details.infraStatus.machine === null ? "N/A" : data.details.infraStatus.machine.creationTime | date:'M/d/yy HH:mm:ss' }}</td>         
+        <td>{{data.details.infraStatus.machine === null ? "N/A" : data.details.infraStatus.machine.resourceName }}</td>
+        <td>{{data.details.infraStatus.machine === null ? "N/A" : data.details.infraStatus.machine.creationTime |
+          date:'M/d/yy HH:mm:ss' }}</td>
       </tr>
     </tbody>
   </table>
@@ -42,24 +49,31 @@
   </div>
 </div>
 <div mat-dialog-content *ngIf="(data.createdFor=='OutputLogs')">
-  <p>{{data.details}}</p>
+  <p>{{data.details.logs}}</p>
 </div>
 <div mat-dialog-content *ngIf="(data.createdFor=='ValidationLogs')">
   <table class="table table-bordered">
-   <thead>
-     <tr>
-       <th scope="col">Cosmos Document</th>
-       <th scope="col">Mongo Document</th>
-     </tr>
-   </thead>
-   <tbody>
-     <tr>
-      <td>{{data.details.cosmosDocument}}</td>
-      <td>{{data.details.mongoDocument}}</td>
-     </tr>     
-   </tbody>
- </table>
+    <thead>
+      <tr>
+        <th scope="col">Cosmos Document</th>
+        <th scope="col">Mongo Document</th>
+      </tr>
+    <tbody>
+      <tr *ngIf="data.details">
+        <td width="400">
+          <app-formatter [data]="data.details.cosmosDocument"></app-formatter>
+        </td>
+        <td width="400">
+          <app-formatter [data]="data.details.mongoDocument"></app-formatter>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
-  <div mat-dialog-actions>
-    <button mat-raised-button color="primary" (click)="onNoClick()">Ok</button>
-  </div>
+<div mat-dialog-actions>
+  <button mat-raised-button color="primary" *ngIf="(data.createdFor=='ValidationLogs')"
+    (click)="getNewSample(data.details.projectId,data.details.database,data.details.collection)">Get New
+    Sample</button>
+  <button mat-raised-button color="primary" (click)="onNoClick()">Ok</button>
+</div>
+<app-loader [isLoading]="showLoader"></app-loader>

@@ -253,18 +253,42 @@ export class LoadtestComponent implements OnInit, OnDestroy {
       console.log('The dialog was closed', result);
     });
   }
-  openDialogForOutputLogs() {
-    const dialogRef = this.dialog.open(DetailsOverviewDialogComponent, {
-      width: '1000px',
-      data: { name: 'Run Logs', details: this.infraCreationProject, createdFor: "OutputLogs" },
+  openDialogForOutputLogs(job: string) {
+    var data: any;
+    this.showLoader = true; const dialogRef = this.dialog.open(DetailsOverviewDialogComponent, {
+      width: '1500px',
+      data: { name: 'Run Logs', details: '', createdFor: "OutputLogs" },
     });
+
 
     dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed', result);
     });
 
+    if (job == "dump") {
+      this.keyholeService.getDumpLogs(this.infraCreationProject.id).subscribe((result: any) => {
+        dialogRef.componentInstance.data.details = result;
+        this.showLoader = false;
 
+      });
+    }
+    if (job == "restore") {
+      this.keyholeService.getRestoreLogs(this.infraCreationProject.id).subscribe((result: any) => {
+        dialogRef.componentInstance.data.details = result;
+        this.showLoader = false;
+      });
+    }
+    if (job == "changeEvents") {
+      this.keyholeService.getChangeEventLogs(this.infraCreationProject.id).subscribe((result: any) => {
+        dialogRef.componentInstance.data.details = result;
+        this.showLoader = false;
+      });
+    }
+
+    this.showLoader = false;
   }
+
+
   openDialogForValidationLogs(row: any) {
     this.showLoader = true;
 
@@ -277,12 +301,19 @@ export class LoadtestComponent implements OnInit, OnDestroy {
       console.log('The dialog was closed', result);
     });
     this.keyholeService.getSampleValidationData(this.infraCreationProject.id, row.database, row.collection).subscribe((result: any) => {
-      dialogRef.componentInstance.data.details = result
+
+      var cosmosDocument = JSON.parse(result.cosmosDocument.replace('\"', '"'));
+      var mongoDocument = JSON.parse(result.mongoDocument.replace('\"', '"'));
+      dialogRef.componentInstance.data.details = {
+        projectId: this.infraCreationProject.id,
+        database: row.database,
+        collection: row.collection,
+        cosmosDocument,
+        mongoDocument
+      }
       this.showLoader = false;
     });
   }
-
-
 
   validateCosmosDetails(): void {
     console.log(this.Project);

@@ -183,3 +183,12 @@ mat-sidenav {
 .disable-icon{
   cursor: not-allowed !important;
 }
+
+
+
+app-formatter .json-formatter-row{
+  width: 410px;
+}
+app-formatter .json-formatter-row .json-formatter-string{
+  white-space: initial;
+}

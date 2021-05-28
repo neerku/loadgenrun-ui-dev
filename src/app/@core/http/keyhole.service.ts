@@ -70,4 +70,14 @@ export class KeyholeService {
   getSampleValidationData(id:any,database: string, collection:string) {
     return this.http.post(this.apiUrl + '/utility/validate/migration/'+ id +'/'+ database+ '/' + collection+ '/sample', '');
   }
+
+  getDumpLogs(id:any) {
+    return this.http.post(this.apiUrl + '/utility/logs/migration/'+ id +'/dump', '');
+  }
+  getRestoreLogs(id:any) {
+    return this.http.post(this.apiUrl + '/utility/logs/migration/'+ id +'/restore', '');
+  }
+  getChangeEventLogs(id:any) {
+    return this.http.post(this.apiUrl + '/utility/logs/migration/'+ id +'/changeevents', '');
+  }
 }

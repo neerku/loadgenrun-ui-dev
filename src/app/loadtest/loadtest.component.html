@@ -405,7 +405,7 @@
                     </mat-icon>               
                     <mat-icon aria-hidden="false" color="primary" aria-label="View Logs" title="Logs"
                     [class.disable-icon]="infraCreationProject.jobStatus.backup.currentStatus == 'Pending'"
-                      (click)="openDialogForOutputLogs()">
+                      (click)="openDialogForOutputLogs('dump')">
                       view_headline
                     </mat-icon>
                   </td>
@@ -423,7 +423,7 @@
                     </mat-icon>
                     <mat-icon aria-hidden="false" color="primary" aria-label="View Logs" title="Logs"
                     [class.disable-icon]="infraCreationProject.jobStatus.restore.currentStatus == 'Pending'"
-                      (click)="openDialogForOutputLogs()">
+                    (click)="openDialogForOutputLogs('restore')">
                       view_headline
                     </mat-icon>
                   </td>
@@ -441,7 +441,7 @@
                     </mat-icon>
                     <mat-icon aria-hidden="false" color="primary" aria-label="View Logs" title="Logs"
                     [class.disable-icon]="infraCreationProject.jobStatus.changeStream.currentStatus == 'Pending'"
-                      (click)="openDialogForOutputLogs()">
+                    (click)="openDialogForOutputLogs('changeEvents')">
                       view_headline
                     </mat-icon>
                   </td>
