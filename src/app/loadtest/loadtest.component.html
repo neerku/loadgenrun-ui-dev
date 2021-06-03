@@ -16,10 +16,10 @@
                   </p>
                   <p>Steps:</p>
                   <ol>
-                    <li>Provide the connection details for your existing (cosmos) cluster.</li>
-                    <li>Provide the connection details for your target mongodb cluster.</li>
+                    <li>Provide the connection details for your existing (Cosmos) cluster.</li>
+                    <li>Provide the connection details for your target Mongodb cluster.</li>
                     <li>Provide virtual machine details to execute the migration.</li>
-                    <li>Monitor your Backup , Restore , ChangeStream.</li>
+                    <li>Monitor your Backup,Restore,ChangeStream.</li>
                   </ol>
                   <p>View <a href="/">CosmosToMongo</a> documentation for any further details.</p>
                   <br />
@@ -30,13 +30,8 @@
                   <input matInput [(ngModel)]="Project.MigrationName" placeholder="Name your task" required />
                 </mat-form-field>
                 <div style="text-align: right">
-                  <button
-                    mat-raised-button
-                    color="primary"
-                    (click)="goNextStep()"
-                    class="pull-right"
-                    disabled="{{ Project.MigrationName == '' }}"
-                  >
+                  <button mat-raised-button color="primary" (click)="goNextStep()" class="pull-right"
+                    disabled="{{ Project.MigrationName == '' }}">
                     Next
                   </button>
                 </div>
@@ -46,54 +41,32 @@
               <section class="form-fields">
                 <mat-form-field appearance="legacy">
                   <mat-label>Host URL</mat-label>
-                  <input
-                    matInput
-                    [(ngModel)]="Project.Configuration.CosmosHost"
-                    placeholder="sample.mongo.cosmos.azure.com:10255"
-                    required
-                  />
+                  <input matInput [(ngModel)]="Project.Configuration.CosmosHost"
+                    placeholder="sample.mongo.cosmos.azure.com:10255" required />
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>Authentication Database</mat-label>
-                  <input
-                    matInput
-                    [(ngModel)]="Project.Configuration.CosmosAuthenticationDatabase"
-                    placeholder="Authenticating database e.g. Admin"
-                    required
-                  />
+                  <input matInput [(ngModel)]="Project.Configuration.CosmosAuthenticationDatabase"
+                    placeholder="Authenticating database e.g. Admin" required />
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>User Name</mat-label>
-                  <input
-                    matInput
-                    [(ngModel)]="Project.Configuration.CosmosUser"
-                    placeholder="Database use name"
-                    required
-                  />
+                  <input matInput [(ngModel)]="Project.Configuration.CosmosUser" placeholder="Database use name"
+                    required />
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>Password</mat-label>
-                  <input
-                    matInput
-                    [(ngModel)]="Project.Configuration.CosmosPassword"
-                    placeholder="Password"
-                    type="password"
-                    required
-                  />
+                  <input matInput [(ngModel)]="Project.Configuration.CosmosPassword" placeholder="Password"
+                    type="password" required />
                 </mat-form-field>
               </section>
               <div style="margin: 20px; margin-left: 0">
-                <button
-                  mat-raised-button
-                  color="primary"
-                  (click)="getDatabaseList()"
-                  disabled="{{
+                <button mat-raised-button color="primary" (click)="getDatabaseList()" disabled="{{
                     Project.Configuration.CosmosHost == '' ||
                       Project.Configuration.CosmosAuthenticationDatabase == '' ||
                       Project.Configuration.CosmosUser == '' ||
                       Project.Configuration.CosmosPassword == ''
-                  }}"
-                >
+                  }}">
                   Validate
                 </button>
                 <span class="vaidation-message">
@@ -111,12 +84,8 @@
                 </span>
                 <mat-form-field appearance="legacy">
                   <mat-label>Collections</mat-label>
-                  <mat-select
-                    [(ngModel)]="Project.Configuration.CosmosDatabases"
-                    multiple
-                    required
-                    [disabled]="Project.Configuration.DumpAll"
-                  >
+                  <mat-select [(ngModel)]="Project.Configuration.CosmosDatabases" multiple required
+                    [disabled]="Project.Configuration.DumpAll">
                     <mat-option *ngFor="let db of cosmosDbList" [value]="db">{{ db }}</mat-option>
                   </mat-select>
                 </mat-form-field>
@@ -124,32 +93,23 @@
                   <button mat-raised-button color="primary" (click)="goPreviousStep()" class="pull-right">
                     Previous
                   </button>
-                  <button
-                    mat-raised-button
-                    color="primary"
-                    (click)="goNextStep()"
-                    class="pull-right"
-                    disabled="{{
+                  <button mat-raised-button color="primary" (click)="goNextStep()" class="pull-right" disabled="{{
                       !(
                         isCosmosConnectionValid &&
                         (Project.Configuration.DumpAll || Project.Configuration.CosmosDatabases.length > 0)
                       )
-                    }}"
-                  >
+                    }}">
                     Next
                   </button>
                 </div>
               </section>
             </mat-tab>
-            <mat-tab
-              label="target details (mongo)"
-              disabled="{{
+            <mat-tab label="target details (mongo)" disabled="{{
                 !(
                   isCosmosConnectionValid &&
                   (Project.Configuration.DumpAll || Project.Configuration.CosmosDatabases.length > 0)
                 )
-              }}"
-            >
+              }}">
               <section style="margin-top: 20px; margin-bottom: 10px">
                 <mat-form-field appearance="legacy">
                   <mat-label>MongoDB Connection String</mat-label>
@@ -157,16 +117,10 @@
                 </mat-form-field>
                 <p>
                   <small>e.g.</small>
-                  <code
-                    >mongodb://[username]:[password]@mongodb1.example.com:27017,mongodb2.example.com:27017,mongodb3.example.com:27017/myFirstDatabase?ssl=true&replicaSet=atlas-3odlmy-shard-0&authSource=[authenticatingdatabase]</code
-                  >
+                  <code>mongodb://[username]:[password]@mongodb1.example.com:27017,mongodb2.example.com:27017,mongodb3.example.com:27017/myFirstDatabase?ssl=true&replicaSet=atlas-3odlmy-shard-0&authSource=[authenticatingdatabase]</code>
                 </p>
-                <button
-                  mat-raised-button
-                  color="primary"
-                  (click)="validateMongoDBConnection()"
-                  [disabled]="Project.Configuration.MongoUri == ''"
-                >
+                <button mat-raised-button color="primary" (click)="validateMongoDBConnection()"
+                  [disabled]="Project.Configuration.MongoUri == ''">
                   Validate
                 </button>
                 <span class="vaidation-message">
@@ -177,13 +131,8 @@
                   <button mat-raised-button color="primary" (click)="goPreviousStep()" class="pull-right">
                     Previous
                   </button>
-                  <button
-                    mat-raised-button
-                    color="primary"
-                    (click)="goNextStep()"
-                    class="pull-right"
-                    disabled="{{ !isMongoConnectionValid }}"
-                  >
+                  <button mat-raised-button color="primary" (click)="goNextStep()" class="pull-right"
+                    disabled="{{ !isMongoConnectionValid }}">
                     Next
                   </button>
                 </div>
@@ -192,8 +141,26 @@
             <mat-tab label="Virtual Machine Configuration" disabled="{{ !isMongoConnectionValid }}">
               <section style="margin-top: 20px; margin-bottom: 10px">
                 <h6 class="sub-header">Service Principal Details</h6>
-                <p><small>Please provide Service Principal details to create new virtual machine.
-                  This machine will host the execution of the dump ,restore and changestream. In addition to it it will also create storage acoount to save the  </small></p>
+                <div class="instructions">
+                  <p>Please provide Service Principal details to create below resources.</p>
+                  <ol>
+                    <li>
+                      Virtual Machine:- This Virtual machine will be used to execute the dump ,restore and change stream
+                      processes.
+                    </li>
+                    <li>
+                      Storage Account:- The storage account will hold the COSMOS DB change events which are generated
+                      when the initial migration is running.
+                    </li>
+                  </ol>
+                  <p>
+                    To create service principal in azure visit
+                    <a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal"
+                      target="_blank">Service Principal</a>
+                    documentation.
+                  </p>
+                  <br />
+                </div>
                 <mat-form-field appearance="legacy">
                   <mat-label>ClientId</mat-label>
                   <input matInput [(ngModel)]="Project.AzAccount.ClientId" placeholder="" required />
@@ -211,17 +178,12 @@
                   <input matInput [(ngModel)]="Project.AzAccount.SubscriptionId" placeholder="" required />
                 </mat-form-field>
                 <div>
-                  <button
-                    mat-raised-button
-                    color="primary"
-                    (click)="getAzureLocations()"
-                    [disabled]="
+                  <button mat-raised-button color="primary" (click)="getAzureLocations()" [disabled]="
                       Project.AzAccount.ClientId == '' ||
                       Project.AzAccount.ClientSecret == '' ||
                       Project.AzAccount.TenantId == '' ||
                       Project.AzAccount.SubscriptionId == ''
-                    "
-                  >
+                    ">
                     Configure VM
                   </button>
                   <span class="vaidation-message">
@@ -245,20 +207,13 @@
 
                 <mat-form-field appearance="legacy">
                   <mat-label>Machine Name</mat-label>
-                  <input
-                    matInput
-                    [(ngModel)]="Project.VMConfiguration.MachineName"
-                    placeholder="Machine name. Avoid Spaces"
-                    required
-                  />
+                  <input matInput [(ngModel)]="Project.VMConfiguration.MachineName"
+                    placeholder="Machine name. Avoid Spaces" required />
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>Location</mat-label>
-                  <mat-select
-                    [(ngModel)]="Project.VMConfiguration.Location"
-                    required
-                    (selectionChange)="changeLocation($event.value)"
-                  >
+                  <mat-select [(ngModel)]="Project.VMConfiguration.Location" required
+                    (selectionChange)="changeLocation($event.value)">
                     <mat-option *ngFor="let location of vmLocations" [value]="location">{{ location }}</mat-option>
                   </mat-select>
                 </mat-form-field>
@@ -278,24 +233,15 @@
                 </mat-form-field>
                 <mat-form-field appearance="legacy">
                   <mat-label>Password</mat-label>
-                  <input
-                    matInput
-                    [(ngModel)]="Project.VMConfiguration.Password"
-                    placeholder=""
-                    required
-                    type="password"
-                  />
+                  <input matInput [(ngModel)]="Project.VMConfiguration.Password" placeholder="" required
+                    type="password" />
                 </mat-form-field>
               </section>
               <div style="text-align: right">
                 <button mat-raised-button color="primary" (click)="goPreviousStep()" class="pull-right">
                   Previous
                 </button>
-                <button
-                  mat-raised-button
-                  color="primary"
-                  (click)="saveConfiguration(stepper)"
-                  class="pull-right"
+                <button mat-raised-button color="primary" (click)="saveConfiguration(stepper)" class="pull-right"
                   disabled="{{
                     Project.AzAccount.ClientId == '' ||
                       Project.AzAccount.ClientSecret == '' ||
@@ -309,8 +255,7 @@
                       Project.VMConfiguration.OsDiskSize == 0 ||
                       Project.VMConfiguration.UserName == '' ||
                       Project.VMConfiguration.Password == ''
-                  }}"
-                >
+                  }}">
                   Start
                 </button>
               </div>
@@ -322,17 +267,26 @@
     <mat-step>
       <ng-template matStepLabel>InfraCreation</ng-template>
       <div class="mt-2" *ngIf="infraCreationProject">
-        <p>Instruction regarding infra creation.</p>
-        <h6 style="margin-bottom: 20px; text-align: right">
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="startDumping(stepper, infraCreationProject)"
-            [disabled]="!infraCreationProject.vmConfiguration.isVirtualMachineCreated"
-          >
+        <div class="instructions">
+          <p>
+            Please wait until your infra is created.Generally it takes 15-20 minutes to provision your VM with required
+            settings.
+          </p>
+          <br />
+          <p style="color: green">This page auto refreshes every 2 minutes.</p>
+          <br />
+        </div>
+        <!-- <div style="margin-bottom: 20px; text-align: right" *ngIf="
+            !(
+              infraCreationProject.jobStatus.backup.currentStatus == 'Completed' ||
+              infraCreationProject.jobStatus.backup.currentStatus == 'In Process'
+            )
+          ">
+          <button mat-raised-button color="primary" (click)="startDumping(stepper, infraCreationProject)"
+            [disabled]="!infraCreationProject.vmConfiguration.isVirtualMachineCreated">
             Start Migration
           </button>
-        </h6>
+        </div> -->
         <table class="table">
           <thead>
             <tr>
@@ -346,31 +300,22 @@
           <tbody>
             <tr>
               <td>{{ infraCreationProject.migrationName }}</td>
-              <td>{{ infraCreationProject.requestedDateTime }}</td>
+              <td>{{ infraCreationProject.requestedDateTime | date:'M/d/yy HH:mm:ss' }}</td>
               <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
-              <td>{{ infraCreationProject.projectStatus }}</td>
+              <td>{{ infraCreationProject.jobStatus.infraCreation.currentStatus }}</td>
               <td>
-                <mat-icon
-                  aria-hidden="false"
-                  color="primary"
-                  aria-label="Edit"
-                  title="Edit"
-                  (click)="editProject(infraCreationProject.id)"
-                  >edit
-                </mat-icon>
-                <mat-icon
-                  aria-hidden="false"
-                  color="primary"
-                  aria-label="Refresh"
-                  title="Refresh"
-                  (click)="refreshProject(infraCreationProject.id)"
-                >
-                  refresh
+                <mat-icon style="padding-left: 10px;" aria-hidden="false" color="primary" aria-label="Logs" title="Logs"
+                  (click)="openDialogForInfraLogs()">
+                  view_headline
                 </mat-icon>
               </td>
             </tr>
           </tbody>
         </table>
+        <div style="margin-top: 20px; margin-bottom: 20px; text-align: right">
+          <button mat-raised-button color="primary" (click)="stepper.next()"
+            [disabled]="!infraCreationProject.vmConfiguration.isVirtualMachineCreated">Next</button>
+        </div>
       </div>
       <section>
         <!-- <textarea *ngIf="loadTestLogs != null" disabled="true" style="width: 100%; height: 200px">{{
@@ -386,121 +331,171 @@
     </mat-step>
     <mat-step>
       <ng-template matStepLabel>Migration</ng-template>
-
       <mat-card>
         <section>
-          <mat-tab-group (selectedTabChange)="onTabChanged($event)">
-            <mat-tab label="backup">
-              <section class="mt-20" *ngIf="infraCreationProject">
-                <h6 style="margin-bottom: 20px; text-align: right">
-                  <button
-                    mat-raised-button
-                    color="primary"
-                    (click)="startRestore(infraCreationProject)"
-                    [disabled]="!(infraCreationProject.jobStatus.backup.currentStatus == 'Completed')"
-                  >
+          <section class="mt-20" *ngIf="infraCreationProject">
+            <!-- <h6 style="margin-bottom: 20px; text-align: right">
+                  <button mat-raised-button color="primary" (click)="startRestore(infraCreationProject)"
+                    [disabled]="infraCreationProject.jobStatus.backup.currentStatus == 'In Process'">
                     Start Restore
                   </button>
-                </h6>
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">Task Name</th>
-                      <th scope="col">Requested Date</th>
-                      <th scope="col">Machine Name</th>
-                      <th scope="col">Status</th>
-                      <th scope="col">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{{ infraCreationProject.migrationName }}</td>
-                      <td>{{ infraCreationProject.jobStatus.backup.startTime }}</td>
-                      <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
-                      <td>{{ infraCreationProject.jobStatus.backup.currentStatus }}</td>
-                      <td>
-                        <button
-                          mat-icon-button
-                          color="primary"
-                          aria-label="Start Backup"
-                          title="Start Backup"
-                          (click)="backupProject(infraCreationProject.id)"
-                        >
-                          <mat-icon>backup</mat-icon> Start
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </section>
-            </mat-tab>
-            <mat-tab label="restore">
-              <section class="mt-20" *ngIf="infraCreationProject">
-                <h6 style="margin-bottom: 20px; text-align: right">
-                  <button
-                    mat-raised-button
-                    color="primary"
-                    (click)="startProcessingChangeEvents(infraCreationProject)"
-                    [disabled]="!(infraCreationProject.jobStatus.restore.currentStatus == 'Completed')"
-                  >
-                    Process Change Event
-                  </button>
-                </h6>
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">Task Name</th>
-                      <th scope="col">Requested Date</th>
-                      <th scope="col">Machine Name</th>
-                      <th scope="col">Status</th>
-                      <th scope="col">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{{ infraCreationProject.migrationName }}</td>
-                      <td>{{ infraCreationProject.jobStatus.restore.startTime }}</td>
-                      <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
-                      <td>{{ infraCreationProject.jobStatus.restore.currentStatus }}</td>
-                      <td>
-                        <button
-                          mat-icon-button
-                          color="primary"
-                          aria-label="Start Restore"
-                          title="Start Restore"
-                          (click)="restoreProject(infraCreationProject.id)"
-                        >
-                          <mat-icon>restore</mat-icon> Start
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </section>
-            </mat-tab>
-            <mat-tab label="change events">
-              <section class="mt-20" *ngIf="infraCreationProject">
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">Task Name</th>
-                      <th scope="col">Requested Date</th>
-                      <th scope="col">Machine Name</th>
-                      <th scope="col">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{{ infraCreationProject.migrationName }}</td>
-                      <td>{{ infraCreationProject.jobStatus.changeStream.startTime }}</td>
-                      <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
-                      <td>{{ infraCreationProject.jobStatus.changeStream.currentStatus }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </section>
-            </mat-tab>
-          </mat-tab-group>
+                </h6> -->
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <th scope="col">Task Name</th>
+                  <td>{{ infraCreationProject.migrationName }}</td>
+                </tr>
+                <tr>
+                  <th scope="col">Machine Name</th>
+                  <td>{{ infraCreationProject.vmConfiguration.machineName }}</td>
+                </tr>
+                <tr>
+                  <th scope="col">Requested Date</th>
+                  <td>{{ infraCreationProject.requestedDateTime | date:'M/d/yy HH:mm:ss' }}</td>
+                </tr>
+                <tr>
+                  <th scope="col">Infra Creation Status</th>
+                  <td>{{ infraCreationProject.jobStatus.infraCreation.currentStatus }}</td>
+                </tr>
+              </tbody>
+            </table><br/>
+            <div class="instructions">           
+            <p><strong>Note:</strong></p>
+                  <ol>
+                    <li>
+                     Stages will be run sequentially.
+                     </li>
+                    <li>
+                     If Backup fails use restart option to rerun the Backups.
+                    </li>
+                    <li>
+                     Restart will not affect your change stream listener.Change Stream Listener will continue to run in the background.
+                     </li>
+                    <li>
+                     Once the backup is complete, Restore & ChangeEvents can be run multiple times.
+                    </li>
+                  </ol><br/> </div>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th scope="col">Job Name</th>
+                  <th scope="col">Start Date</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">End Date</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Backup</td>
+                  <td>{{ infraCreationProject.jobStatus.backup.startTime | date:'M/d/yy HH:mm:ss' }}</td>
+                  <td>{{ infraCreationProject.jobStatus.backup.currentStatus }}</td>
+                  <td>{{ infraCreationProject.jobStatus.backup.endTime | date:'M/d/yy HH:mm:ss' }}</td>
+                  <td>
+                    <mat-icon aria-hidden="false" color="primary" aria-label="Start" title="Start"
+                      [class.disable-icon]="(infraCreationProject.jobStatus.backup.isJobEverStarted)"
+                      (click)="startDumping(infraCreationProject)">
+                      play_circle_filled
+                    </mat-icon>
+                    <mat-icon aria-hidden="false" color="primary" aria-label="Restart" title="Restart"
+                    [class.disable-icon]="(infraCreationProject.jobStatus.backup.currentStatus == 'Pending' || infraCreationProject.jobStatus.isAnyJobRunning)"
+                      (click)="restartDumping(infraCreationProject.id)">
+                      restore
+                    </mat-icon>               
+                    <mat-icon aria-hidden="false" color="primary" aria-label="View Logs" title="Logs"
+                    [class.disable-icon]="infraCreationProject.jobStatus.backup.currentStatus == 'Pending'"
+                      (click)="openDialogForOutputLogs('dump')">
+                      view_headline
+                    </mat-icon>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Restore</td>
+                  <td>{{ infraCreationProject.jobStatus.restore.startTime | date:'M/d/yy HH:mm:ss' }}</td>
+                  <td>{{ infraCreationProject.jobStatus.restore.currentStatus }}</td>
+                  <td>{{ infraCreationProject.jobStatus.restore.endTime | date:'M/d/yy HH:mm:ss' }}</td>
+                  <td>
+                    <mat-icon aria-hidden="false" color="primary" aria-label="Start" title="Start"
+                    [class.disable-icon]="(infraCreationProject.jobStatus.backup.currentStatus != 'Completed' && !infraCreationProject.jobStatus.isAnyJobRunning) || infraCreationProject.jobStatus.isAnyJobRunning"
+                      (click)="startRestore(infraCreationProject)">
+                      play_circle_filled
+                    </mat-icon>
+                    <mat-icon aria-hidden="false" color="primary" aria-label="View Logs" title="Logs"
+                    [class.disable-icon]="infraCreationProject.jobStatus.restore.currentStatus == 'Pending'"
+                    (click)="openDialogForOutputLogs('restore')">
+                      view_headline
+                    </mat-icon>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Process Change Events</td>
+                  <td>{{ infraCreationProject.jobStatus.changeStream.startTime | date:'M/d/yy HH:mm:ss' }}</td>
+                  <td>{{ infraCreationProject.jobStatus.changeStream.currentStatus }}</td>
+                  <td>{{ infraCreationProject.jobStatus.changeStream.endTime | date:'M/d/yy HH:mm:ss' }}</td>
+                  <td>
+                    <mat-icon aria-hidden="false" color="primary" aria-label="Start" title="Start"
+                    [class.disable-icon]="(!(infraCreationProject.jobStatus.backup.currentStatus == 'Completed' && infraCreationProject.jobStatus.restore.currentStatus == 'Completed') && !infraCreationProject.jobStatus.isAnyJobRunning) || infraCreationProject.jobStatus.isAnyJobRunning"
+                      (click)="startProcessingChangeEvents(infraCreationProject)">
+                      play_circle_filled
+                    </mat-icon>
+                    <mat-icon aria-hidden="false" color="primary" aria-label="View Logs" title="Logs"
+                    [class.disable-icon]="infraCreationProject.jobStatus.changeStream.currentStatus == 'Pending'"
+                    (click)="openDialogForOutputLogs('changeEvents')">
+                      view_headline
+                    </mat-icon>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+          <div style="margin-top: 20px; margin-bottom: 20px; text-align: right" *ngIf="projectId != ''">
+            <button mat-raised-button color="primary" (click)="stepper.previous()">Previous</button>
+            <button mat-raised-button color="primary" (click)="validateData(stepper)" [disabled]="!(infraCreationProject.jobStatus.backup.currentStatus == 'Completed' && infraCreationProject.jobStatus.restore.currentStatus == 'Completed' && infraCreationProject.jobStatus.changeStream.currentStatus == 'Completed')">Validate</button>
+          </div>
+        </section>
+      </mat-card>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Validation</ng-template>
+      <mat-card>
+        <section>
+          <section class="mt-20" *ngIf="infraCreationProject">
+            <h6 style="margin-bottom: 20px; text-align: right">
+              <!-- <button mat-raised-button color="primary" (click)="startProcessingChangeEvents(infraCreationProject)"
+                [disabled]="!(infraCreationProject.jobStatus.changeStream.currentStatus == 'Completed')">
+                Validate
+              </button> -->
+            </h6>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Database</th>
+                  <th scope="col">Collection</th>
+                  <th scope="col">CosmosDB</th>
+                  <th scope="col">MongoDB</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let result of dataForValidation">
+                  <td>{{ result.database }}</td>
+                  <td>{{ result.collection }}</td>
+                  <td> Document Count: {{result.cosmosDocumentCount }}</td>
+                  <td> Document Count: {{result.mongoDocumentCount}}</td>
+                  <td>
+                    <mat-icon aria-hidden="false" color="primary" aria-label="Get Sample Data" title="Get Sample Data"
+                      (click)="openDialogForValidationLogs(result)">
+                      image_search
+                    </mat-icon>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+          <div style="margin-top: 20px; margin-bottom: 20px; text-align: right" *ngIf="projectId != ''">
+            <button mat-raised-button color="primary" (click)="stepper.previous()">Previous</button>
+          </div>
         </section>
       </mat-card>
     </mat-step>

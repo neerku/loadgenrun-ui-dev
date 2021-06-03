@@ -15,6 +15,7 @@ import { GenerateDataDialogComponent } from '@app/generate-data-dialog/generate-
 import { MatIconModule } from '@angular/material/icon';
 import { TemplatePreviewDialogComponent } from '@app/template-preview-dialog/template-preview-dialog.component';
 import { SharedModule } from '@shared';
+import { DetailsOverviewDialogModule } from './details-overview-dialog/details-overview-dialog.module';
 @NgModule({
   imports: [
     CommonModule,
@@ -28,6 +29,7 @@ import { SharedModule } from '@shared';
     MatDialogModule,
     MatIconModule,
     SharedModule,
+    DetailsOverviewDialogModule,
   ],
   declarations: [
     LoadtestComponent,
